@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosmosSqlAntlr", "CosmosSqlAntlr\CosmosSqlAntlr.csproj", "{CE0C47B2-3997-4017-9008-CB2E0DF95C28}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CE0C47B2-3997-4017-9008-CB2E0DF95C28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE0C47B2-3997-4017-9008-CB2E0DF95C28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE0C47B2-3997-4017-9008-CB2E0DF95C28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE0C47B2-3997-4017-9008-CB2E0DF95C28}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EFBABE81-3C63-460B-8428-5596C1364D0A}
+	EndGlobalSection
+EndGlobal
