@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{CE0C47B2-3997-4017-9008-CB2E0DF95C28}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CosmosSqlAntlr</RootNamespace>
     <AssemblyName>CosmosSqlAntlr</AssemblyName>
@@ -41,10 +41,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CalculatorVisitor.cs" />
-    <Compile Include="ErrorListener.cs" />
-    <Compile Include="LASets.cs" />
-    <Compile Include="Output.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Antlr4 Include="sql.g4" />
   </ItemGroup>

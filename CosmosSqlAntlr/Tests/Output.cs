@@ -2,7 +2,6 @@
 namespace CosmosSqlAntlr
 {
     using Antlr4.Runtime;
-    using Antlr4.Runtime.Misc;
     using Antlr4.Runtime.Tree;
     using System;
     using System.Collections.Generic;
@@ -32,7 +31,11 @@ namespace CosmosSqlAntlr
             return sb;
         }
 
-        private static void ParenthesizedAST(this IParseTree tree, StringBuilder sb, CommonTokenStream stream, int level = 0)
+        private static void ParenthesizedAST(
+            this IParseTree tree, 
+            StringBuilder sb, 
+            CommonTokenStream stream, 
+            int level = 0)
         {
             // Antlr always names a non-terminal with first letter lowercase,
             // but renames it when creating the type in C#. So, remove the prefix,
@@ -41,7 +44,7 @@ namespace CosmosSqlAntlr
             if (tree as TerminalNodeImpl != null)
             {
                 TerminalNodeImpl tok = tree as TerminalNodeImpl;
-                Interval interval = tok.SourceInterval;
+                _ = tok.SourceInterval;
                 IList<IToken> inter = null;
                 if (tok.Symbol.TokenIndex >= 0)
                 {
@@ -52,12 +55,12 @@ namespace CosmosSqlAntlr
                 {
                     foreach (IToken t in inter)
                     {
-                        StartLine(sb, tree, stream, level);
+                        StartLine(sb, level);
                         sb.AppendLine("( " + ((Lexer)stream.TokenSource).ChannelNames[t.Channel] + " text=" + t.Text.PerformEscapes());
                     }
                 }
 
-                StartLine(sb, tree, stream, level);
+                StartLine(sb, level);
                 sb.AppendLine("( " + ((Lexer)stream.TokenSource).ChannelNames[tok.Symbol.Channel] + " i=" + tree.SourceInterval.a
                     + " txt=" + tree.GetText().PerformEscapes()
                     + " tt=" + tok.Symbol.Type);
@@ -70,7 +73,7 @@ namespace CosmosSqlAntlr
                 fixed_name = fixed_name.Substring(0, fixed_name.Length - "Context".Length);
                 fixed_name = fixed_name[0].ToString().ToLower()
                              + fixed_name.Substring(1);
-                StartLine(sb, tree, stream, level);
+                StartLine(sb, level);
                 sb.Append("( " + fixed_name);
                 sb.AppendLine();
             }
@@ -91,7 +94,9 @@ namespace CosmosSqlAntlr
             }
         }
 
-        private static void StartLine(StringBuilder sb, IParseTree tree, CommonTokenStream stream, int level = 0)
+        private static void StartLine(
+            StringBuilder sb,
+            int level = 0)
         {
             if (changed - level >= 0)
             {
@@ -121,19 +126,17 @@ namespace CosmosSqlAntlr
 
         private static string ToLiteral(this string input)
         {
-            using (StringWriter writer = new StringWriter())
-            {
-                string literal = input;
-                literal = literal.Replace("\\", "\\\\");
-                literal = literal.Replace("\b", "\\b");
-                literal = literal.Replace("\n", "\\n");
-                literal = literal.Replace("\t", "\\t");
-                literal = literal.Replace("\r", "\\r");
-                literal = literal.Replace("\f", "\\f");
-                literal = literal.Replace("\"", "\\\"");
-                literal = literal.Replace(string.Format("\" +{0}\t\"", Environment.NewLine), "");
-                return literal;
-            }
+            using StringWriter writer = new StringWriter();
+            string literal = input;
+            literal = literal.Replace("\\", "\\\\");
+            literal = literal.Replace("\b", "\\b");
+            literal = literal.Replace("\n", "\\n");
+            literal = literal.Replace("\t", "\\t");
+            literal = literal.Replace("\r", "\\r");
+            literal = literal.Replace("\f", "\\f");
+            literal = literal.Replace("\"", "\\\"");
+            literal = literal.Replace(string.Format("\" +{0}\t\"", Environment.NewLine), "");
+            return literal;
         }
 
         public static string PerformEscapes(this string s)

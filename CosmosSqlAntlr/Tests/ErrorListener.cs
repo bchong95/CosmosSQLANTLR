@@ -1,5 +1,5 @@
 ﻿// Template generated code from Antlr4BuildTasks.Template v 3.0
-namespace CosmosSqlAntlr
+namespace CosmosSqlAntlr.Tests
 {
     using Antlr4.Runtime;
     using Antlr4.Runtime.Misc;
