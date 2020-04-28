@@ -59,7 +59,7 @@ order_by_item
 	;
 
 offset_limit_clause
-	: '%'
+	: K_OFFSET NUMERIC_LITERAL K_LIMIT NUMERIC_LITERAL
 	;
 
 scalar_expression
@@ -107,6 +107,8 @@ K_ORDER : O R D E R;
 K_VALUE : V A L U E;
 K_WHERE : W H E R E;
 K_GROUP : G R O U P;
+K_OFFSET : O F F S E T;
+K_LIMIT : L I M I T;
 
 WS
    : [ \r\n\t] + -> skip
