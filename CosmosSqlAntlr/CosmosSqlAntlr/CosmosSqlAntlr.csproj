@@ -46,7 +46,7 @@
     <Compile Include="Output.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Antlr4 Include="arithmetic.g4" />
+    <Antlr4 Include="sql.g4" />
   </ItemGroup>
   <ItemGroup>
     <!--<PackageReference Include="Antlr4.Runtime">
@@ -58,6 +58,9 @@
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>3021;1701;1702</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
