@@ -51,7 +51,11 @@ group_by_clause
 	;
 
 order_by_clause
-	: '%'
+	: K_ORDER K_BY order_by_item (',' order_by_item)*
+	;
+
+order_by_item
+	: scalar_expression (K_ASC | K_DESC)?
 	;
 
 offset_limit_clause
@@ -80,10 +84,13 @@ scalar_expression_list
 	: scalar_expression ( ',' scalar_expression )*
 	;
 
+K_ASC : A S C;
+K_DESC : D E S C;
 K_AND : A N D;
 K_ARRAY : A R R A Y;
 K_AS : A S;
 K_BETWEEN : B E T W E E N;
+K_BY : B Y;
 K_DISTINCT : D I S T I N C T;
 K_EXISTS : E X I S T S;
 K_FALSE : F A L S E;
@@ -96,6 +103,7 @@ K_TOP : T O P;
 K_TRUE : T R U E;
 K_UDF : U D F;
 K_UNDEFINED : U N D E F I N E D;
+K_ORDER : O R D E R;
 K_VALUE : V A L U E;
 
 WS

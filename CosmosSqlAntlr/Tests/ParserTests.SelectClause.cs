@@ -23,6 +23,7 @@
         {
             ParserTests.Validate("SELECT VALUE 1");
             ParserTests.Invalidate("SELECT VALUE 1, 2");
+            ParserTests.Invalidate("SELECTVALUE 1");
         }
     }
 }
