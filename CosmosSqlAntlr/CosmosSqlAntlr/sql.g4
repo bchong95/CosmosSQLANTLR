@@ -39,15 +39,15 @@ select_item
 	;
 
 from_clause
-	: '$'
+	: '%'
 	;
 
 where_clause
-	: '%'
+	: K_WHERE scalar_expression
 	;
 
 group_by_clause
-	: '%'
+	: K_GROUP K_BY scalar_expression_list
 	;
 
 order_by_clause
@@ -105,6 +105,8 @@ K_UDF : U D F;
 K_UNDEFINED : U N D E F I N E D;
 K_ORDER : O R D E R;
 K_VALUE : V A L U E;
+K_WHERE : W H E R E;
+K_GROUP : G R O U P;
 
 WS
    : [ \r\n\t] + -> skip
