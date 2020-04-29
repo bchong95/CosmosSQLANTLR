@@ -4,83 +4,74 @@ program
 	: sql_query EOF
 	;
 
-sql_query
-	: select_clause from_clause? where_clause? group_by_clause? order_by_clause? offset_limit_clause?
-	;
+sql_query : select_clause from_clause? where_clause? group_by_clause? order_by_clause? offset_limit_clause? ;
 
-select_clause
-	: K_SELECT K_DISTINCT? top_spec? selection
-	;
-
-top_spec 
-	: K_TOP NUMERIC_LITERAL
-	;
-
+/* SELECT */
+/*--------------------------------------------------------------------------------*/
+select_clause : K_SELECT K_DISTINCT? top_spec? selection ;
+top_spec : K_TOP NUMERIC_LITERAL;
 selection
 	: select_star_spec
 	| select_value_spec 
 	| select_list_spec
 	;
+select_star_spec : '*' ;
+select_value_spec : K_VALUE scalar_expression ;
+select_list_spec : select_item ( ',' select_item )* ;
+select_item : scalar_expression (K_AS IDENTIFIER)? ;
+/*--------------------------------------------------------------------------------*/
 
-select_star_spec
-	: '*'
-	;
-
-select_value_spec
-	: K_VALUE scalar_expression
-	;
-
-select_list_spec
-	: select_item ( ',' select_item )*
-	;
-
-select_item
-	: scalar_expression (K_AS IDENTIFIER)?
-	;
-
-from_clause
-	: K_FROM collection_expression
-	;
-
+/* FROM */
+/*--------------------------------------------------------------------------------*/
+from_clause : K_FROM collection_expression ;
 collection_expression
 	: collection (K_AS IDENTIFIER)? #AliasedCollectionExpression
 	| IDENTIFIER K_IN collection #ArrayIteratorCollectionExpression 
 	| collection_expression K_JOIN collection_expression #JoinCollectionExpression
 	;
-
 collection
 	: path_expression #InputPathCollection
 	| '[' (scalar_expression (',' scalar_expression)*)? ']' #LiteralArrayCollection
 	| '(' sql_query ')' #SubqueryCollection
 	;
-
 path_expression
 	: IDENTIFIER'.'path_expression #RecursiveIdentifierPathExpression
 	| path_expression'[' NUMERIC_LITERAL ']' #NumberPathExpression
 	| path_expression'[' STRING_LITERAL ']' #StringPathExpression
 	| IDENTIFIER #BaseIdentifierPathExpression
 	;
+/*--------------------------------------------------------------------------------*/
 
-where_clause
-	: K_WHERE scalar_expression
+/* WHERE */
+/*--------------------------------------------------------------------------------*/
+where_clause : K_WHERE scalar_expression ;
+/*--------------------------------------------------------------------------------*/
+
+/* GROUP BY */
+/*--------------------------------------------------------------------------------*/
+group_by_clause : K_GROUP K_BY scalar_expression_list ;
+/*--------------------------------------------------------------------------------*/
+
+/* ORDER BY */
+/*--------------------------------------------------------------------------------*/
+order_by_clause : K_ORDER K_BY order_by_items ;
+order_by_items : order_by_item (',' order_by_item)* ;
+order_by_item : scalar_expression sort_order? ;
+sort_order
+	: K_ASC
+	| K_DESC
 	;
+/*--------------------------------------------------------------------------------*/
 
-group_by_clause
-	: K_GROUP K_BY scalar_expression ( ',' scalar_expression )*
-	;
+/* OFFSET LIMIT */
+/*--------------------------------------------------------------------------------*/
+offset_limit_clause : K_OFFSET offset_count K_LIMIT limit_count;
+offset_count : NUMERIC_LITERAL;
+limit_count : NUMERIC_LITERAL;
+/*--------------------------------------------------------------------------------*/
 
-order_by_clause
-	: K_ORDER K_BY order_by_item (',' order_by_item)*
-	;
-
-order_by_item
-	: scalar_expression (K_ASC | K_DESC)?
-	;
-
-offset_limit_clause
-	: K_OFFSET NUMERIC_LITERAL K_LIMIT NUMERIC_LITERAL
-	;
-
+/* SCALAR EXPRESSIONs */
+/*--------------------------------------------------------------------------------*/
 scalar_expression
 	: '[' scalar_expression_list? ']' #ArrayCreateScalarExpression
 	| K_ARRAY '(' sql_query ')' #ArrayScalarExpression
@@ -99,11 +90,7 @@ scalar_expression
 	| '(' sql_query ')' #SubqueryScalarExpression
 	| unary_operator scalar_expression #UnaryScalarExpression
 	;
-
-scalar_expression_list
-	: scalar_expression ( ',' scalar_expression )*
-	;
-
+scalar_expression_list : scalar_expression ( ',' scalar_expression )* ;
 binary_operator
 	: '+' 
 	| K_AND 
@@ -123,22 +110,19 @@ binary_operator
 	| '||' 
 	| '-'
 	;
-
 unary_operator
 	: '-' 
 	| '+' 
 	| '~' 
 	| K_NOT
 	;
+object_propertty_list : object_property (',' object_property)* ;
 
-object_propertty_list
-	: object_property (',' object_property)*
-	;
+object_property : STRING_LITERAL ':' scalar_expression ;
+/*--------------------------------------------------------------------------------*/
 
-object_property
-	: STRING_LITERAL ':' scalar_expression
-	;
-
+/* KEYWORDS */
+/*--------------------------------------------------------------------------------*/
 K_AND : A N D;
 K_ARRAY : A R R A Y;
 K_AS : A S;
@@ -167,10 +151,13 @@ K_UNDEFINED : 'undefined';
 K_VALUE : V A L U E;
 K_WHERE : W H E R E;
 
+/*--------------------------------------------------------------------------------*/
 WS
    : [ \r\n\t] + -> skip
    ;
 
+/* LITERALS */
+/*--------------------------------------------------------------------------------*/
 literal
 	: STRING_LITERAL
 	| NUMERIC_LITERAL
@@ -193,7 +180,10 @@ IDENTIFIER
 	:
 	| [a-zA-Z_][a-zA-Z_]*DIGIT*
 	;
+/*--------------------------------------------------------------------------------*/
 
+/* FRAGMENTS */
+/*--------------------------------------------------------------------------------*/
 fragment DIGIT : [0-9];
 
 fragment A : [aA];
@@ -222,3 +212,4 @@ fragment W : [wW];
 fragment X : [xX];
 fragment Y : [yY];
 fragment Z : [zZ];
+/*--------------------------------------------------------------------------------*/
