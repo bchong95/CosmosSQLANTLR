@@ -82,22 +82,57 @@ offset_limit_clause
 	;
 
 scalar_expression
-	: '[' (scalar_expression ( ',' scalar_expression )*)? ']' #ArrayCreateScalarExpression
+	: '[' scalar_expression_list? ']' #ArrayCreateScalarExpression
 	| K_ARRAY '(' sql_query ')' #ArrayScalarExpression
 	| scalar_expression K_NOT? K_BETWEEN scalar_expression K_AND scalar_expression #BetweenScalarExpression
-	| scalar_expression ( '+' | K_AND | '&' | '|' | '^' | '/' | '=' | '>' | '>=' | '<' | '<=' | '%' | '*' | '!=' | K_OR | '||' | '-' ) scalar_expression #BinaryScalarExpression
+	| scalar_expression binary_operator scalar_expression #BinaryScalarExpression
 	| scalar_expression '??' scalar_expression #CoalesceScalarExpression
 	| scalar_expression '?' scalar_expression ':' scalar_expression #ConditionalScalarExpression
 	| K_EXISTS '(' sql_query ')' #ExistsScalarExpression
-	| (K_UDF '.')? IDENTIFIER '(' (scalar_expression ( ',' scalar_expression )*)? ')' #FunctionCallScalarExpression
-	| scalar_expression K_NOT? K_IN '(' scalar_expression ( ',' scalar_expression )* ')' #InScalarExpression
+	| (K_UDF '.')? IDENTIFIER '(' scalar_expression_list? ')' #FunctionCallScalarExpression
+	| scalar_expression K_NOT? K_IN '(' scalar_expression_list ')' #InScalarExpression
 	| literal #LiteralScalarExpression
 	| scalar_expression '[' scalar_expression ']' #MemberIndexerScalarExpression
-	| '{' (object_property (',' object_property)*)? '}' #ObjectCreateScalarExpression
+	| '{' object_propertty_list? '}' #ObjectCreateScalarExpression
 	| IDENTIFIER #PropertyRefScalarExpressionBase
 	| scalar_expression '.' IDENTIFIER #PropertyRefScalarExpressionRecursive
 	| '(' sql_query ')' #SubqueryScalarExpression
-	| ( '-' | '+' | '~' | K_NOT ) scalar_expression #UnaryScalarExpression
+	| unary_operator scalar_expression #UnaryScalarExpression
+	;
+
+scalar_expression_list
+	: scalar_expression ( ',' scalar_expression )*
+	;
+
+binary_operator
+	: '+' 
+	| K_AND 
+	| '&' 
+	| '|' 
+	| '^' 
+	| '/' 
+	| '=' 
+	| '>' 
+	| '>=' 
+	| '<' 
+	| '<=' 
+	| '%' 
+	| '*' 
+	| '!=' 
+	| K_OR 
+	| '||' 
+	| '-'
+	;
+
+unary_operator
+	: '-' 
+	| '+' 
+	| '~' 
+	| K_NOT
+	;
+
+object_propertty_list
+	: object_property (',' object_property)*
 	;
 
 object_property

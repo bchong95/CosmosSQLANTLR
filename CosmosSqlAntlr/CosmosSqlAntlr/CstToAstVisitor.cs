@@ -10,6 +10,7 @@
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Linq;
+    using System.Runtime.Remoting.Contexts;
 
     /// <summary>
     /// Converts from ANTLR's CST to a CosmosDB SQL AST.
@@ -112,6 +113,7 @@
                 sqlOffsetLimitClause);
         }
 
+        #region SELECT
         public override SqlObject VisitSelect_clause([NotNull] sqlParser.Select_clauseContext context)
         {
             SqlSelectSpec sqlSelectSpec = default;
@@ -222,19 +224,19 @@
             Number64 topCount = CstToAstVisitor.GetNumber64ValueFromNode(context.children[1]);
             return SqlTopSpec.Create(SqlNumberLiteral.Create(topCount));
         }
-
+        #endregion
+        #region ScalarExpressions
         public override SqlObject VisitArrayCreateScalarExpression([NotNull] sqlParser.ArrayCreateScalarExpressionContext context)
         {
             Contract.Requires(context != null);
             Contract.Requires(context.ChildCount >= 2); // start array and end array tokens
 
             List<SqlScalarExpression> arrayItems = new List<SqlScalarExpression>();
-            for (int i = 1; i < context.children.Count - 1; i++)
+            if (context.scalar_expression_list() != null)
             {
-                IParseTree arrayToken = context.children[i];
-                if (arrayToken is ParserRuleContext parserRuleContext)
+                foreach (sqlParser.Scalar_expressionContext scalarExpressionContext in context.scalar_expression_list().scalar_expression())
                 {
-                    arrayItems.Add((SqlScalarExpression)this.Visit(parserRuleContext));
+                    arrayItems.Add((SqlScalarExpression)this.Visit(scalarExpressionContext));
                 }
             }
 
@@ -244,9 +246,8 @@
         public override SqlObject VisitArrayScalarExpression([NotNull] sqlParser.ArrayScalarExpressionContext context)
         {
             Contract.Requires(context != null);
-            Contract.Requires(context.ChildCount == 4); // K_ARRAY '(' sql_query ')'
 
-            SqlQuery sqlQuery = (SqlQuery)this.Visit(context.children[2]);
+            SqlQuery sqlQuery = (SqlQuery)this.Visit(context.sql_query());
             return SqlArrayScalarExpression.Create(sqlQuery);
         }
 
@@ -254,12 +255,11 @@
         {
             Contract.Requires(context != null);
             // scalar_expression K_NOT? K_BETWEEN scalar_expression K_AND scalar_expression
-            Contract.Requires((context.ChildCount == 5) || (context.ChildCount == 6));
 
-            SqlScalarExpression needle = (SqlScalarExpression)this.Visit(context.children[0]);
-            bool not = context.ChildCount == 6;
-            SqlScalarExpression start = (SqlScalarExpression)this.Visit(context.children[3 - (not ? 0 : 1)]);
-            SqlScalarExpression end = (SqlScalarExpression)this.Visit(context.children[5 - (not ? 0 : 1)]);
+            SqlScalarExpression needle = (SqlScalarExpression)this.Visit(context.scalar_expression(0));
+            bool not = context.K_NOT() != null;
+            SqlScalarExpression start = (SqlScalarExpression)this.Visit(context.scalar_expression(1));
+            SqlScalarExpression end = (SqlScalarExpression)this.Visit(context.scalar_expression(2));
 
             return SqlBetweenScalarExpression.Create(needle, start, end, not);
         }
@@ -270,13 +270,15 @@
             // scalar_expression binary_operator scalar_expression
             Contract.Requires(context.ChildCount == 3);
 
-            SqlScalarExpression left = (SqlScalarExpression)this.Visit(context.children[0]);
-            if (!CstToAstVisitor.binaryOperatorKindLookup.TryGetValue(context.children[1].GetText(), out SqlBinaryScalarOperatorKind operatorKind))
+            SqlScalarExpression left = (SqlScalarExpression)this.Visit(context.scalar_expression(0));
+            if (!CstToAstVisitor.binaryOperatorKindLookup.TryGetValue(
+                context.binary_operator().GetText(),
+                out SqlBinaryScalarOperatorKind operatorKind))
             {
-                throw new ArgumentOutOfRangeException($"Unknown binary operator: {context.children[1].GetText()}.");
+                throw new ArgumentOutOfRangeException($"Unknown binary operator: {context.binary_operator().GetText()}.");
             }
 
-            SqlScalarExpression right = (SqlScalarExpression)this.Visit(context.children[2]);
+            SqlScalarExpression right = (SqlScalarExpression)this.Visit(context.scalar_expression(1));
 
             return SqlBinaryScalarExpression.Create(operatorKind, left, right);
         }
@@ -285,10 +287,9 @@
         {
             Contract.Requires(context != null);
             // scalar_expression '??' scalar_expression
-            Contract.Requires(context.ChildCount == 3);
 
-            SqlScalarExpression left = (SqlScalarExpression)this.Visit(context.children[0]);
-            SqlScalarExpression right = (SqlScalarExpression)this.Visit(context.children[2]);
+            SqlScalarExpression left = (SqlScalarExpression)this.Visit(context.scalar_expression(0));
+            SqlScalarExpression right = (SqlScalarExpression)this.Visit(context.scalar_expression(1));
 
             return SqlCoalesceScalarExpression.Create(left, right);
         }
@@ -299,9 +300,9 @@
             // scalar_expression '?' scalar_expression ':' scalar_expression
             Contract.Requires(context.ChildCount == 5);
 
-            SqlScalarExpression condition = (SqlScalarExpression)this.Visit(context.children[0]);
-            SqlScalarExpression consequent = (SqlScalarExpression)this.Visit(context.children[2]);
-            SqlScalarExpression alternative = (SqlScalarExpression)this.Visit(context.children[4]);
+            SqlScalarExpression condition = (SqlScalarExpression)this.Visit(context.scalar_expression(0));
+            SqlScalarExpression consequent = (SqlScalarExpression)this.Visit(context.scalar_expression(1));
+            SqlScalarExpression alternative = (SqlScalarExpression)this.Visit(context.scalar_expression(2));
             return SqlConditionalScalarExpression.Create(condition, consequent, alternative);
         }
 
@@ -318,17 +319,16 @@
         public override SqlObject VisitFunctionCallScalarExpression([NotNull] sqlParser.FunctionCallScalarExpressionContext context)
         {
             Contract.Requires(context != null);
-            Contract.Requires(context.ChildCount >= 3);
-            // (K_UDF '.')? IDENTIFIER '(' (scalar_expression ( ',' scalar_expression )*)? ')'
-            bool udf = ((TerminalNodeImpl)context.children[0]).Symbol.Type == sqlParser.K_UDF;
-            SqlIdentifier identifier = SqlIdentifier.Create(context.children[0 + (udf ? 2 : 0)].GetText());
+            // (K_UDF '.')? IDENTIFIER '(' scalar_expression_list? ')'
+
+            bool udf = context.K_UDF() != null;
+            SqlIdentifier identifier = SqlIdentifier.Create(context.IDENTIFIER().GetText());
             List<SqlScalarExpression> arguments = new List<SqlScalarExpression>();
-            for (int i = 2 + (udf ? 2 : 0); i < context.ChildCount - 1; i++)
+            if (context.scalar_expression_list() != null)
             {
-                IParseTree arrayToken = context.children[i];
-                if (arrayToken is ParserRuleContext parserRuleContext)
+                foreach (sqlParser.Scalar_expressionContext scalarExpressionContext in context.scalar_expression_list().scalar_expression())
                 {
-                    arguments.Add((SqlScalarExpression)this.Visit(parserRuleContext));
+                    arguments.Add((SqlScalarExpression)this.Visit(scalarExpressionContext));
                 }
             }
 
@@ -338,19 +338,14 @@
         public override SqlObject VisitInScalarExpression([NotNull] sqlParser.InScalarExpressionContext context)
         {
             Contract.Requires(context != null);
-            // scalar_expression K_NOT? K_IN '(' (scalar_expression ( ',' scalar_expression )*)? ')'
-            Contract.Requires(context.ChildCount >= 4);
+            // scalar_expression K_NOT? K_IN '(' scalar_expression_list ')'
 
-            SqlScalarExpression needle = (SqlScalarExpression)this.Visit(context.children[0]);
-            bool not = ((TerminalNodeImpl)context.children[1]).Symbol.Type == sqlParser.K_NOT;
+            SqlScalarExpression needle = (SqlScalarExpression)this.Visit(context.scalar_expression());
+            bool not = context.K_NOT() != null;
             List<SqlScalarExpression> searchList = new List<SqlScalarExpression>();
-            for (int i = 2 + (not ? 1 : 0); i < context.ChildCount - 1; i++)
+            foreach (sqlParser.Scalar_expressionContext scalarExpressionContext in context.scalar_expression_list().scalar_expression())
             {
-                IParseTree arrayToken = context.children[i];
-                if (arrayToken is ParserRuleContext parserRuleContext)
-                {
-                    searchList.Add((SqlScalarExpression)this.Visit(parserRuleContext));
-                }
+                searchList.Add((SqlScalarExpression)this.Visit(scalarExpressionContext));
             }
 
             return SqlInScalarExpression.Create(needle, not, searchList);
@@ -404,10 +399,9 @@
         {
             Contract.Requires(context != null);
             // scalar_expression '[' scalar_expression ']'
-            Contract.Requires(context.ChildCount == 4);
 
-            SqlScalarExpression memberExpression = (SqlScalarExpression)this.Visit(context.children[0]);
-            SqlScalarExpression indexExpression = (SqlScalarExpression)this.Visit(context.children[2]);
+            SqlScalarExpression memberExpression = (SqlScalarExpression)this.Visit(context.scalar_expression(0));
+            SqlScalarExpression indexExpression = (SqlScalarExpression)this.Visit(context.scalar_expression(1));
 
             return SqlMemberIndexerScalarExpression.Create(memberExpression, indexExpression);
         }
@@ -415,20 +409,21 @@
         public override SqlObject VisitObjectCreateScalarExpression([NotNull] sqlParser.ObjectCreateScalarExpressionContext context)
         {
             Contract.Requires(context != null);
-            //'{' (object_property (',' object_property)*)? '}'
-            Contract.Requires(context.ChildCount >= 2);
+            // '{' object_propertty_list? '}'
 
             List<SqlObjectProperty> properties = new List<SqlObjectProperty>();
-            for (int i = 1; i < context.children.Count - 1; i++)
+            if (context.object_propertty_list() != null)
             {
-                IParseTree objectToken = context.children[i];
-                if (objectToken is ParserRuleContext parserRuleContext)
+                sqlParser.Object_propertyContext[] propertyContexts = context.object_propertty_list().object_property();
+                foreach (sqlParser.Object_propertyContext objectPropertyContext in propertyContexts)
                 {
-                    // object_property : STRING_LITERAL ':' scalar_expression
-                    string name = CstToAstVisitor.GetStringValueFromNode(parserRuleContext.children[0]);
-                    SqlScalarExpression sqlScalarExpression = (SqlScalarExpression)this.Visit(parserRuleContext.children[2]);
-                    SqlObjectProperty objectProperty = SqlObjectProperty.Create(SqlPropertyName.Create(name), sqlScalarExpression);
-                    properties.Add(objectProperty);
+                    string name = CstToAstVisitor.GetStringValueFromNode(objectPropertyContext.STRING_LITERAL());
+                    SqlScalarExpression value = (SqlScalarExpression)this.Visit(objectPropertyContext.scalar_expression());
+
+                    SqlObjectProperty property = SqlObjectProperty.Create(
+                        SqlPropertyName.Create(name),
+                        value);
+                    properties.Add(property);
                 }
             }
 
@@ -439,19 +434,19 @@
         {
             Contract.Requires(context != null);
             // IDENTIFIER
-            Contract.Requires(context.ChildCount == 1);
 
-            return SqlPropertyRefScalarExpression.Create(memberExpression: null, SqlIdentifier.Create(context.children[0].GetText()));
+            return SqlPropertyRefScalarExpression.Create(
+                memberExpression: null,
+                SqlIdentifier.Create(context.IDENTIFIER().GetText()));
         }
 
         public override SqlObject VisitPropertyRefScalarExpressionRecursive([NotNull] sqlParser.PropertyRefScalarExpressionRecursiveContext context)
         {
             Contract.Requires(context != null);
             // scalar_expression '.' IDENTIFIER
-            Contract.Requires(context.ChildCount == 3);
 
-            SqlScalarExpression memberExpression = (SqlScalarExpression)this.Visit(context.children[0]);
-            SqlIdentifier indentifier = SqlIdentifier.Create(context.children[2].GetText());
+            SqlScalarExpression memberExpression = (SqlScalarExpression)this.Visit(context.scalar_expression());
+            SqlIdentifier indentifier = SqlIdentifier.Create(context.IDENTIFIER().GetText());
 
             return SqlPropertyRefScalarExpression.Create(memberExpression, indentifier);
         }
@@ -460,9 +455,8 @@
         {
             Contract.Requires(context != null);
             // '(' sql_query ')'
-            Contract.Requires(context.ChildCount == 3);
 
-            SqlQuery subquery = (SqlQuery)this.Visit(context.children[1]);
+            SqlQuery subquery = (SqlQuery)this.Visit(context.sql_query());
             return SqlSubqueryScalarExpression.Create(subquery);
         }
 
@@ -472,16 +466,19 @@
             // unary_operator scalar_expression
             Contract.Requires(context.ChildCount == 2);
 
-            string unaryOperatorText = context.children[0].GetText();
-            if (!CstToAstVisitor.unaryOperatorKindLookup.TryGetValue(unaryOperatorText, out SqlUnaryScalarOperatorKind unaryOperator))
+            string unaryOperatorText = context.unary_operator().GetText();
+            if (!CstToAstVisitor.unaryOperatorKindLookup.TryGetValue(
+                unaryOperatorText,
+                out SqlUnaryScalarOperatorKind unaryOperator))
             {
                 throw new ArgumentOutOfRangeException($"Unknown unary operator: {unaryOperatorText}.");
             }
 
-            SqlScalarExpression expression = (SqlScalarExpression)this.Visit(context.children[1]);
+            SqlScalarExpression expression = (SqlScalarExpression)this.Visit(context.scalar_expression());
 
             return SqlUnaryScalarExpression.Create(unaryOperator, expression);
         }
+        #endregion
 
         private sealed class UnknownSqlObjectException : ArgumentOutOfRangeException
         {

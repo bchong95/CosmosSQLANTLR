@@ -44,7 +44,7 @@ namespace CosmosSqlAntlr.Tests
                 Assert.IsTrue(listener.had_error, $"Parser didn't have error: '{tree.OutputTree(tokens)}' for query: {query}");
                 Console.WriteLine(tree.OutputTree(tokens));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
         }
