@@ -2,7 +2,8 @@
 {
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    public partial class ParserTests
+    [TestClass]
+    public class SelectClauseTests : ParserTests
     {
         [TestMethod]
         public void SelectStar()

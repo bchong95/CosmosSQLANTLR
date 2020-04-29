@@ -6,9 +6,9 @@ namespace CosmosSqlAntlr.Tests
     using System;
 
     [TestClass]
-    public partial class ParserTests
+    public abstract class ParserTests
     {
-        private static void Validate(string query)
+        protected static void Validate(string query)
         {
             Assert.IsNotNull(query);
             AntlrInputStream str = new AntlrInputStream(query);
@@ -24,7 +24,7 @@ namespace CosmosSqlAntlr.Tests
             Assert.AreEqual(query, sqlObject.ToString());
         }
 
-        private static void Invalidate(string query)
+        protected static void Invalidate(string query)
         {
             Assert.IsNotNull(query);
             AntlrInputStream str = new AntlrInputStream(query);

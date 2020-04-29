@@ -3,7 +3,8 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System.Linq;
 
-    public partial class ParserTests
+    [TestClass]
+    public class FromClauseTests : ParserTests
     {
         private static readonly string baseInputPathExpression = "c";
         private static readonly string recursiveInputPathExpression = "c.age";
@@ -33,7 +34,7 @@
             {
                 foreach (bool useAlias in new bool[] { false, true })
                 {
-                    ParserTests.ValidateFromClause($"FROM {collection} {(useAlias ? "AS asdf" : string.Empty)}");
+                    FromClauseTests.ValidateFromClause($"FROM {collection} {(useAlias ? "AS asdf" : string.Empty)}");
                 }
             }
         }
@@ -43,14 +44,14 @@
         {
             foreach (string collection in collections)
             {
-                ParserTests.ValidateFromClause($"FROM item IN {collection}");
+                FromClauseTests.ValidateFromClause($"FROM item IN {collection}");
             }
         }
 
         [TestMethod]
         public void JoinCollection()
         {
-            ParserTests.ValidateFromClause($"FROM c JOIN d in c.children");
+            FromClauseTests.ValidateFromClause($"FROM c JOIN d in c.children");
         }
 
         private static void ValidateFromClause(string fromClause)

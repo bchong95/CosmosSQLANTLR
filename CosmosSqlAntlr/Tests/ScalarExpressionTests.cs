@@ -2,7 +2,8 @@
 {
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    public partial class ParserTests
+    [TestClass]
+    public class ScalarExpressionTests : ParserTests
     {
         [TestMethod]
         [DataRow("[]", DisplayName = "Empty Array")]
@@ -10,7 +11,7 @@
         [DataRow("[1, 2, 3]", DisplayName = "Multi Item Array")]
         public void ArrayCreateScalarExpressionPositive(string scalarExpression)
         {
-            ParserTests.ValidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -20,14 +21,14 @@
         [DataRow("[,]", DisplayName = "delimiter no items")]
         public void ArrayCreateScalarExpressionNegative(string scalarExpression)
         {
-            ParserTests.InvalidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.InvalidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
         [DataRow("ARRAY(SELECT *)", DisplayName = "Basic")]
         public void ArrayScalarExpressionPositive(string scalarExpression)
         {
-            ParserTests.ValidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -36,7 +37,7 @@
         //[DataRow("ARAY(123)", DisplayName = "Wrong token")] -> becomes function call
         public void ArrayScalarExpressionNegative(string scalarExpression)
         {
-            ParserTests.InvalidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.InvalidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -44,7 +45,7 @@
         [DataRow("42 NOT BETWEEN 15 AND 1337", DisplayName = "NOT Betweeen")]
         public void BetweenScalarExpressionPositive(string scalarExpression)
         {
-            ParserTests.ValidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -55,7 +56,7 @@
         [DataRow("BETWEEN 15 AND 1337", DisplayName = "missing needle")]
         public void BetweenScalarExpressionNegative(string scalarExpression)
         {
-            ParserTests.InvalidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.InvalidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -78,7 +79,7 @@
         [DataRow("42 - 1337", DisplayName = "Minus")]
         public void BinaryScalarExpressionPositive(string scalarExpression)
         {
-            ParserTests.ValidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -88,14 +89,14 @@
         // infinite recursion in ANTLR, since it thinks this is a number literal scalar expression and expects EOF
         public void BinaryScalarExpressionNegative(string scalarExpression)
         {
-            ParserTests.InvalidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.InvalidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
         [DataRow("42 ?? 1337")]
         public void CoalesceScalarExpressionPositive(string scalarExpression)
         {
-            ParserTests.ValidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -103,14 +104,14 @@
         [DataRow("?? 1337", DisplayName = "Missing Left")]
         public void CoalesceScalarExpressionNegative(string scalarExpression)
         {
-            ParserTests.InvalidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.InvalidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
         [DataRow("42 ? 123 : 1337", DisplayName = "Basic")]
         public void ConditionalScalarExpressionPositive(string scalarExpression)
         {
-            ParserTests.ValidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -119,7 +120,7 @@
         [DataRow("42 ? 123 : ", DisplayName = "Missing if false")]
         public void ConditionalScalarExpressionNegative(string scalarExpression)
         {
-            ParserTests.InvalidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.InvalidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -127,7 +128,7 @@
         [DataRow("ExIsTS(SELECT *)", DisplayName = "case insensitive")]
         public void ExistsScalarExpressionPositive(string scalarExpression)
         {
-            ParserTests.ValidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -136,7 +137,7 @@
         //[DataRow("EXITS(123)", DisplayName = "Wrong token")] -> becomes function call
         public void ExistsScalarExpressionNegative(string scalarExpression)
         {
-            ParserTests.InvalidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.InvalidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -146,7 +147,7 @@
         [DataRow("udf.my_udf(-123)", DisplayName = "udf")]
         public void FunctionCallScalarExpressionPositive(string scalarExpression)
         {
-            ParserTests.ValidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -156,7 +157,7 @@
         [DataRow("ABS(,)", DisplayName = "delimiter but no arguments")]
         public void FunctionCallScalarExpressionNegative(string scalarExpression)
         {
-            ParserTests.InvalidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.InvalidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -166,7 +167,7 @@
         [DataRow("42 NOT IN (42)", DisplayName = "NOT IN")]
         public void InScalarExpressionPositive(string scalarExpression)
         {
-            ParserTests.ValidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -178,7 +179,7 @@
         [DataRow("42 inn (123)", DisplayName = "mispelled keyword")]
         public void InScalarExpressionNegative(string scalarExpression)
         {
-            ParserTests.InvalidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.InvalidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -194,7 +195,7 @@
         [DataRow("undefined", DisplayName = "undefined")]
         public void LiteralScalarExpressionPositive(string scalarExpression)
         {
-            ParserTests.ValidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -206,7 +207,7 @@
         [DataRow("undefine", DisplayName = "undefined cut off")]
         public void LiteralScalarExpressionNegative(string scalarExpression)
         {
-            ParserTests.InvalidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.InvalidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -214,14 +215,14 @@
         [DataRow("c.array[2 + 2]", DisplayName = "Basic")]
         public void MemberIndexerScalarExpressionPositive(string scalarExpression)
         {
-            ParserTests.ValidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
         [DataRow("c.array[]", DisplayName = "missing indexer expression")]
         public void MemberIndexerScalarExpressionNegative(string scalarExpression)
         {
-            ParserTests.InvalidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.InvalidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -230,7 +231,7 @@
         [DataRow("{ 'prop1' : 42, 'prop2' : 1337 }", DisplayName = "MultipleProperty")]
         public void ObjectCreateScalarExpressionPositive(string scalarExpression)
         {
-            ParserTests.ValidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -240,7 +241,7 @@
         [DataRow("{ 23 : 42, }", DisplayName = "non string property name")]
         public void ObjectCreateScalarExpressionNegative(string scalarExpression)
         {
-            ParserTests.InvalidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.InvalidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -250,21 +251,21 @@
         [DataRow("c.array['asdf']", DisplayName = "StringIndex")]
         public void PropertyRefScalarExpressionPositive(string scalarExpression)
         {
-            ParserTests.ValidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
         [DataRow("c.2", DisplayName = "number with dot notation")]
         public void PropertyRefScalarExpressionNegative(string scalarExpression)
         {
-            ParserTests.InvalidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.InvalidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
         [DataRow("(SELECT *)", DisplayName = "basic")]
         public void SubqueryScalarExpressionPositive(string scalarExpression)
         {
-            ParserTests.ValidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -274,7 +275,7 @@
         [DataRow("(2)", DisplayName = "not a subquery")]
         public void SubqueryScalarExpressionNegative(string scalarExpression)
         {
-            ParserTests.InvalidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.InvalidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -284,28 +285,28 @@
         [DataRow("!42", DisplayName = "not")]
         public void UnaryScalarExpressionPositive(string scalarExpression)
         {
-            ParserTests.ValidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
         [DataRow("$42", DisplayName = "unknown operator")]
         public void UnaryScalarExpressionNegative(string scalarExpression)
         {
-            ParserTests.InvalidateScalarExpression(scalarExpression);
+            ScalarExpressionTests.InvalidateScalarExpression(scalarExpression);
         }
 
         private static void ValidateScalarExpression(string scalarExpression)
         {
             Assert.IsNotNull(scalarExpression);
             string query = $"SELECT VALUE {scalarExpression}";
-            ParserTests.Validate(query);
+            ScalarExpressionTests.Validate(query);
         }
 
         private static void InvalidateScalarExpression(string scalarExpression)
         {
             Assert.IsNotNull(scalarExpression);
             string query = $"SELECT VALUE {scalarExpression}";
-            ParserTests.Invalidate(query);
+            ScalarExpressionTests.Invalidate(query);
         }
     }
 }

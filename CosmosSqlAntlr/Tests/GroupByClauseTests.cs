@@ -1,24 +1,24 @@
 ﻿namespace CosmosSqlAntlr.Tests
 {
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using System;
 
-    public partial class ParserTests
+    [TestClass]
+    public class GroupByClauseTests : ParserTests
     {
         [TestMethod]
         public void SingleGroupBy()
         {
-            ParserTests.ValidateGroupBy("GROUP BY 1");
-            ParserTests.InvalidateGroupBy("GROUP BY ");
-            ParserTests.InvalidateGroupBy("GROUPBY 1");
+            GroupByClauseTests.ValidateGroupBy("GROUP BY 1");
+            GroupByClauseTests.InvalidateGroupBy("GROUP BY ");
+            GroupByClauseTests.InvalidateGroupBy("GROUPBY 1");
         }
 
         [TestMethod]
         public void MultiGroupBy()
         {
-            ParserTests.ValidateGroupBy("GROUP BY 1, 2, 3");
-            ParserTests.ValidateGroupBy("GROUP BY 1, 2");
-            ParserTests.InvalidateGroupBy("GROUP BY 1,");
+            GroupByClauseTests.ValidateGroupBy("GROUP BY 1, 2, 3");
+            GroupByClauseTests.ValidateGroupBy("GROUP BY 1, 2");
+            GroupByClauseTests.InvalidateGroupBy("GROUP BY 1,");
         }
 
         private static void ValidateGroupBy(string groupByClause)
