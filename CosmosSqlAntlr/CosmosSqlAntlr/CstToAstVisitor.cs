@@ -54,54 +54,64 @@
         public override SqlObject VisitProgram([NotNull] sqlParser.ProgramContext context)
         {
             Contract.Requires(context != null);
-            Contract.Requires(context.ChildCount == 2);
 
-            IParseTree queryContext = context.children[0];
-            return this.Visit(queryContext);
+            return this.Visit(context.sql_query());
         }
 
         public override SqlObject VisitSql_query([NotNull] sqlParser.Sql_queryContext context)
         {
             Contract.Requires(context != null);
 
-            SqlSelectClause sqlSelectClause = default;
-            SqlFromClause sqlFromClause = default;
-            SqlWhereClause sqlWhereClause = default;
-            SqlOrderbyClause sqlOrderByClause = default;
-            SqlGroupByClause sqlGroupByClause = default;
-            SqlOffsetLimitClause sqlOffsetLimitClause = default;
-            foreach (IParseTree parseTree in context.children)
+            SqlSelectClause sqlSelectClause = (SqlSelectClause)this.Visit(context.select_clause());
+
+            SqlFromClause sqlFromClause;
+            if (context.from_clause() != null)
             {
-                SqlObject clause = this.Visit(parseTree);
-                switch (clause)
-                {
-                    case SqlSelectClause select:
-                        sqlSelectClause = select;
-                        break;
+                sqlFromClause = (SqlFromClause)this.Visit(context.from_clause());
+            }
+            else
+            {
+                sqlFromClause = default;
+            }
 
-                    case SqlFromClause from:
-                        sqlFromClause = from;
-                        break;
+            SqlWhereClause sqlWhereClause;
+            if (context.where_clause() != null)
+            {
+                sqlWhereClause = (SqlWhereClause)this.Visit(context.where_clause());
+            }
+            else
+            {
+                sqlWhereClause = default;
+            }
 
-                    case SqlWhereClause where:
-                        sqlWhereClause = where;
-                        break;
+            SqlOrderbyClause sqlOrderByClause;
+            if (context.order_by_clause() != null)
+            {
+                sqlOrderByClause = (SqlOrderbyClause)this.Visit(context.order_by_clause());
+            }
+            else
+            {
+                sqlOrderByClause = default;
+            }
 
-                    case SqlOrderbyClause orderBy:
-                        sqlOrderByClause = orderBy;
-                        break;
+            SqlGroupByClause sqlGroupByClause;
+            if (context.group_by_clause() != default)
+            {
+                sqlGroupByClause = (SqlGroupByClause)this.Visit(context.group_by_clause());
+            }
+            else
+            {
+                sqlGroupByClause = default;
+            }
 
-                    case SqlGroupByClause groupBy:
-                        sqlGroupByClause = groupBy;
-                        break;
-
-                    case SqlOffsetLimitClause offsetLimit:
-                        sqlOffsetLimitClause = offsetLimit;
-                        break;
-
-                    default:
-                        throw new UnknownSqlObjectException(clause);
-                }
+            SqlOffsetLimitClause sqlOffsetLimitClause;
+            if (context.offset_limit_clause() != default)
+            {
+                sqlOffsetLimitClause = (SqlOffsetLimitClause)this.Visit(context.offset_limit_clause());
+            }
+            else
+            {
+                sqlOffsetLimitClause = default;
             }
 
             return SqlQuery.Create(
@@ -116,45 +126,18 @@
         #region SELECT
         public override SqlObject VisitSelect_clause([NotNull] sqlParser.Select_clauseContext context)
         {
-            SqlSelectSpec sqlSelectSpec = default;
-            SqlTopSpec sqlTopSpec = default;
-            bool distinct = default;
-
-            foreach (IParseTree parseTree in context.children)
+            SqlSelectSpec sqlSelectSpec = (SqlSelectSpec)this.Visit(context.selection());
+            SqlTopSpec sqlTopSpec;
+            if (context.top_spec() != default)
             {
-                if (parseTree is TerminalNodeImpl terminalNode)
-                {
-                    switch (terminalNode.Symbol.Type)
-                    {
-                        case sqlParser.K_DISTINCT:
-                            distinct = true;
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
-                else
-                {
-                    SqlObject sqlObject = this.Visit(parseTree);
-                    if (sqlObject != null)
-                    {
-                        switch (sqlObject)
-                        {
-                            case SqlSelectSpec selectSpec:
-                                sqlSelectSpec = selectSpec;
-                                break;
-
-                            case SqlTopSpec topSpec:
-                                sqlTopSpec = topSpec;
-                                break;
-
-                            default:
-                                throw new UnknownSqlObjectException(sqlObject);
-                        }
-                    }
-                }
+                sqlTopSpec = (SqlTopSpec)this.Visit(context.top_spec());
             }
+            else
+            {
+                sqlTopSpec = default;
+            }
+
+            bool distinct = context.K_DISTINCT() != default;
 
             return SqlSelectClause.Create(sqlSelectSpec, sqlTopSpec, distinct);
         }
@@ -169,10 +152,8 @@
         public override SqlObject VisitSelect_value_spec([NotNull] sqlParser.Select_value_specContext context)
         {
             Contract.Requires(context != null);
-            Contract.Requires(context.ChildCount == 2);
 
-            IParseTree scalarExpressionContext = context.children[1];
-            SqlScalarExpression scalarExpression = (SqlScalarExpression)this.Visit(scalarExpressionContext);
+            SqlScalarExpression scalarExpression = (SqlScalarExpression)this.Visit(context.scalar_expression());
             SqlSelectValueSpec sqlSelectValueSpec = SqlSelectValueSpec.Create(scalarExpression);
             return sqlSelectValueSpec;
         }
@@ -180,18 +161,12 @@
         public override SqlObject VisitSelect_list_spec([NotNull] sqlParser.Select_list_specContext context)
         {
             Contract.Requires(context != null);
-            Contract.Requires(context.ChildCount >= 1);
 
             List<SqlSelectItem> sqlSelectItems = new List<SqlSelectItem>();
-            foreach (IParseTree parseTree in context.children)
+            foreach (sqlParser.Select_itemContext selectItemContext in context.select_item())
             {
-                if (parseTree is ParserRuleContext parserRuleContext)
-                {
-                    SqlObject sqlObject = this.Visit(parserRuleContext);
-                    Contract.Requires(sqlObject != null);
-
-                    sqlSelectItems.Add((SqlSelectItem)sqlObject);
-                }
+                SqlSelectItem selectItem = (SqlSelectItem)this.Visit(selectItemContext);
+                sqlSelectItems.Add(selectItem);
             }
 
             return SqlSelectListSpec.Create(sqlSelectItems);
@@ -200,13 +175,12 @@
         public override SqlObject VisitSelect_item([NotNull] sqlParser.Select_itemContext context)
         {
             Contract.Requires(context != null);
-            Contract.Requires((context.ChildCount == 1) || (context.ChildCount == 3));
 
-            SqlScalarExpression sqlScalarExpression = (SqlScalarExpression)this.Visit(context.children[0]);
+            SqlScalarExpression sqlScalarExpression = (SqlScalarExpression)this.Visit(context.scalar_expression());
             SqlIdentifier alias;
-            if (context.ChildCount == 3)
+            if (context.IDENTIFIER() != null)
             {
-                alias = SqlIdentifier.Create(context.children[2].GetText());
+                alias = SqlIdentifier.Create(context.IDENTIFIER().GetText());
             }
             else
             {
@@ -219,9 +193,8 @@
         public override SqlObject VisitTop_spec([NotNull] sqlParser.Top_specContext context)
         {
             Contract.Requires(context != null);
-            Contract.Requires(context.ChildCount == 2);
 
-            Number64 topCount = CstToAstVisitor.GetNumber64ValueFromNode(context.children[1]);
+            Number64 topCount = CstToAstVisitor.GetNumber64ValueFromNode(context.NUMERIC_LITERAL());
             return SqlTopSpec.Create(SqlNumberLiteral.Create(topCount));
         }
         #endregion
