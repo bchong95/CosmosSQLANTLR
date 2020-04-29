@@ -30,6 +30,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -40,7 +43,81 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AST\Number64.cs" />
+    <Compile Include="AST\SqlAliasedCollectionExpression.cs" />
+    <Compile Include="AST\SqlArrayCreateScalarExpression.cs" />
+    <Compile Include="AST\SqlArrayIteratorCollectionExpression.cs" />
+    <Compile Include="AST\SqlArrayScalarExpression.cs" />
+    <Compile Include="AST\SqlBetweenScalarExpression.cs" />
+    <Compile Include="AST\SqlBinaryScalarExpression.cs" />
+    <Compile Include="AST\SqlBinaryScalarOperatorKind.cs" />
+    <Compile Include="AST\SqlBooleanLiteral.cs" />
+    <Compile Include="AST\SqlCoalesceScalarExpression.cs" />
+    <Compile Include="AST\SqlCollection.cs" />
+    <Compile Include="AST\SqlCollectionExpression.cs" />
+    <Compile Include="AST\SqlConditionalScalarExpression.cs" />
+    <Compile Include="AST\SqlExistsScalarExpression.cs" />
+    <Compile Include="AST\SqlFromClause.cs" />
+    <Compile Include="AST\SqlFunctionCallScalarExpression.cs" />
+    <Compile Include="AST\SqlGroupByClause.cs" />
+    <Compile Include="AST\SqlIdentifier.cs" />
+    <Compile Include="AST\SqlIdentifierPathExpression.cs" />
+    <Compile Include="AST\SqlInputPathCollection.cs" />
+    <Compile Include="AST\SqlInScalarExpression.cs" />
+    <Compile Include="AST\SqlJoinCollectionExpression.cs" />
+    <Compile Include="AST\SqlLimitSpec.cs" />
+    <Compile Include="AST\SqlLiteral.cs" />
+    <Compile Include="AST\SqlLiteralArrayCollection.cs" />
+    <Compile Include="AST\SqlLiteralScalarExpression.cs" />
+    <Compile Include="AST\SqlMemberIndexerScalarExpression.cs" />
+    <Compile Include="AST\SqlNullLiteral.cs" />
+    <Compile Include="AST\SqlNumberLiteral.cs" />
+    <Compile Include="AST\SqlNumberPathExpression.cs" />
+    <Compile Include="AST\SqlObject.cs" />
+    <Compile Include="AST\SqlObjectBuilderUtils.cs" />
+    <Compile Include="AST\SqlObjectCreateScalarExpression.cs" />
+    <Compile Include="AST\SqlObjectKind.cs" />
+    <Compile Include="AST\SqlObjectProperty.cs" />
+    <Compile Include="AST\SqlOffsetLimitClause.cs" />
+    <Compile Include="AST\SqlOffsetSpec.cs" />
+    <Compile Include="AST\SqlOrderbyClause.cs" />
+    <Compile Include="AST\SqlOrderByItem.cs" />
+    <Compile Include="AST\SqlParameter.cs" />
+    <Compile Include="AST\SqlParameterRefScalarExpression.cs" />
+    <Compile Include="AST\SqlPathExpression.cs" />
+    <Compile Include="AST\SqlProgram.cs" />
+    <Compile Include="AST\SqlPropertyName.cs" />
+    <Compile Include="AST\SqlPropertyRefScalarExpression.cs" />
+    <Compile Include="AST\SqlQuery.cs" />
+    <Compile Include="AST\SqlScalarExpression.cs" />
+    <Compile Include="AST\SqlSelectClause.cs" />
+    <Compile Include="AST\SqlSelectItem.cs" />
+    <Compile Include="AST\SqlSelectListSpec.cs" />
+    <Compile Include="AST\SqlSelectSpec.cs" />
+    <Compile Include="AST\SqlSelectStarSpec.cs" />
+    <Compile Include="AST\SqlSelectValueSpec.cs" />
+    <Compile Include="AST\SqlStringLiteral.cs" />
+    <Compile Include="AST\SqlStringPathExpression.cs" />
+    <Compile Include="AST\SqlSubqueryCollection.cs" />
+    <Compile Include="AST\SqlSubqueryScalarExpression.cs" />
+    <Compile Include="AST\SqlTopSpec.cs" />
+    <Compile Include="AST\SqlUnaryScalarExpression.cs" />
+    <Compile Include="AST\SqlUnaryScalarOperatorKind.cs" />
+    <Compile Include="AST\SqlUndefinedLiteral.cs" />
+    <Compile Include="AST\SqlWhereClause.cs" />
+    <Compile Include="AST\Visitors\SqlCollectionExpressionVisitor.cs" />
+    <Compile Include="AST\Visitors\SqlCollectionVisitor.cs" />
+    <Compile Include="AST\Visitors\SqlLiteralVisitor.cs" />
+    <Compile Include="AST\Visitors\SqlObjectHasher.cs" />
+    <Compile Include="AST\Visitors\SqlObjectObfuscator.cs" />
+    <Compile Include="AST\Visitors\SqlObjectTextSerializer.cs" />
+    <Compile Include="AST\Visitors\SqlObjectVisitor.cs" />
+    <Compile Include="AST\Visitors\SqlPathExpressionVisitor.cs" />
+    <Compile Include="AST\Visitors\SqlScalarExpressionVisitor.cs" />
+    <Compile Include="AST\Visitors\SqlSelectSpecVisitor.cs" />
+    <Compile Include="BtiUtils.cs" />
     <Compile Include="CalculatorVisitor.cs" />
+    <Compile Include="CstToAstVisitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Antlr4 Include="sql.g4" />
   </ItemGroup>
@@ -52,6 +129,7 @@
     <PackageReference Include="Antlr4BuildTasks" Version="3.0" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.5.0" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>3021;1701;1702</NoWarn>
   </PropertyGroup>

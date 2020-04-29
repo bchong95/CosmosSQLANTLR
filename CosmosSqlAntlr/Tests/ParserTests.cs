@@ -17,7 +17,7 @@ namespace CosmosSqlAntlr.Tests
             ErrorListener<IToken> listener = new ErrorListener<IToken>(parser, lexer, tokens);
             parser.AddErrorListener(listener);
             sqlParser.ProgramContext tree = parser.program();
-            Assert.IsFalse(listener.had_error, $"Parser ran into error: {tree.OutputTree(tokens)}.");
+            Assert.IsFalse(listener.had_error, $"Parser ran into error: '{tree.OutputTree(tokens)}' for query: {query}");
             Console.WriteLine(tree.OutputTree(tokens));
         }
 
