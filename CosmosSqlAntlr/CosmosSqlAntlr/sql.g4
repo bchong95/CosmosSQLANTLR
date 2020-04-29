@@ -35,7 +35,7 @@ select_list_spec
 	;
 
 select_item
-	: scalar_expression (K_AS alias)?
+	: scalar_expression (K_AS IDENTIFIER)?
 	;
 
 from_clause
@@ -103,6 +103,14 @@ scalar_expression_list
 	: scalar_expression ( ',' scalar_expression )*
 	;
 
+object_property_list
+	: object_property (',' object_property)*
+	;
+
+object_property
+	: STRING_LITERAL ':' scalar_expression
+	;
+
 K_AND : A N D;
 K_ARRAY : A R R A Y;
 K_AS : A S;
@@ -112,36 +120,28 @@ K_BY : B Y;
 K_DESC : D E S C;
 K_DISTINCT : D I S T I N C T;
 K_EXISTS : E X I S T S;
-K_FALSE : F A L S E;
+K_FALSE : 'false';
 K_FROM : F R O M;
 K_GROUP : G R O U P;
 K_IN : I N ;
 K_JOIN : J O I N;
 K_LIMIT : L I M I T;
 K_NOT : N O T;
-K_NULL : N U L L;
+K_NULL : 'null';
 K_OFFSET : O F F S E T;
 K_OR : O R;
 K_ORDER : O R D E R;
 K_SELECT : S E L E C T;
 K_TOP : T O P;
-K_TRUE : T R U E;
+K_TRUE : 'true';
 K_UDF : U D F;
-K_UNDEFINED : U N D E F I N E D;
+K_UNDEFINED : 'undefined';
 K_VALUE : V A L U E;
 K_WHERE : W H E R E;
 
 WS
    : [ \r\n\t] + -> skip
    ;
-
-object_property_list
-	: object_property (',' object_property)*
-	;
-
-object_property
-	: STRING_LITERAL ':' scalar_expression
-	;
 
 literal
 	: STRING_LITERAL
@@ -150,10 +150,6 @@ literal
 	| K_FALSE
 	| K_NULL
 	| K_UNDEFINED
-	;
-
-alias
-	: '%'
 	;
 
 NUMERIC_LITERAL
@@ -167,7 +163,7 @@ STRING_LITERAL
 
 IDENTIFIER
 	:
-	| [a-zA-Z_][a-zA-Z_]*
+	| [a-zA-Z_][a-zA-Z_]*DIGIT*
 	;
 
 fragment DIGIT : [0-9];

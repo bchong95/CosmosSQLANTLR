@@ -1,6 +1,7 @@
 namespace CosmosSqlAntlr.Tests
 {
     using Antlr4.Runtime;
+    using Microsoft.Azure.Cosmos.Sql;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
 
@@ -19,6 +20,8 @@ namespace CosmosSqlAntlr.Tests
             sqlParser.ProgramContext tree = parser.program();
             Assert.IsFalse(listener.had_error, $"Parser ran into error: '{tree.OutputTree(tokens)}' for query: {query}");
             Console.WriteLine(tree.OutputTree(tokens));
+            SqlObject sqlObject = new CstToAstVisitor().Visit(tree);
+            Assert.AreEqual(query, sqlObject.ToString());
         }
 
         private static void Invalidate(string query)
