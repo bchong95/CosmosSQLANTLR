@@ -66,7 +66,7 @@ where_clause
 	;
 
 group_by_clause
-	: K_GROUP K_BY scalar_expression_list
+	: K_GROUP K_BY scalar_expression ( ',' scalar_expression )*
 	;
 
 order_by_clause
@@ -82,29 +82,22 @@ offset_limit_clause
 	;
 
 scalar_expression
-	: '[' scalar_expression_list? ']' #ArrayCreateScalarExpression
+	: '[' (scalar_expression ( ',' scalar_expression )*)? ']' #ArrayCreateScalarExpression
 	| K_ARRAY '(' sql_query ')' #ArrayScalarExpression
 	| scalar_expression K_NOT? K_BETWEEN scalar_expression K_AND scalar_expression #BetweenScalarExpression
 	| scalar_expression ( '+' | K_AND | '&' | '|' | '^' | '/' | '=' | '>' | '>=' | '<' | '<=' | '%' | '*' | '!=' | K_OR | '||' | '-' ) scalar_expression #BinaryScalarExpression
 	| scalar_expression '??' scalar_expression #CoalesceScalarExpression
 	| scalar_expression '?' scalar_expression ':' scalar_expression #ConditionalScalarExpression
 	| K_EXISTS '(' sql_query ')' #ExistsScalarExpression
-	| (K_UDF '.')? IDENTIFIER '(' scalar_expression_list? ')' #FunctionCallScalarExpression
-	| scalar_expression K_NOT? K_IN '(' scalar_expression_list? ')' #InScalarExpression
+	| (K_UDF '.')? IDENTIFIER '(' (scalar_expression ( ',' scalar_expression )*)? ')' #FunctionCallScalarExpression
+	| scalar_expression K_NOT? K_IN '(' scalar_expression ( ',' scalar_expression )* ')' #InScalarExpression
 	| literal #LiteralScalarExpression
 	| scalar_expression '[' scalar_expression ']' #MemberIndexerScalarExpression
-	| '{' object_property_list? '}' #ObjectCreateScalarExpression
-	| scalar_expression '.' IDENTIFIER #PropertyRefScalarExpression
+	| '{' (object_property (',' object_property)*)? '}' #ObjectCreateScalarExpression
+	| IDENTIFIER #PropertyRefScalarExpressionBase
+	| scalar_expression '.' IDENTIFIER #PropertyRefScalarExpressionRecursive
 	| '(' sql_query ')' #SubqueryScalarExpression
-	| ( '-' | '+' | '~' | '!' ) scalar_expression #UnaryScalarExpression
-	;
-
-scalar_expression_list 
-	: scalar_expression ( ',' scalar_expression )*
-	;
-
-object_property_list
-	: object_property (',' object_property)*
+	| ( '-' | '+' | '~' | K_NOT ) scalar_expression #UnaryScalarExpression
 	;
 
 object_property

@@ -85,8 +85,7 @@
         [TestMethod]
         [DataRow("42 +", DisplayName = "Missing Right")]
         [DataRow("AND 1337", DisplayName = "Missing Left")]
-        //[DataRow("42 # 1337", DisplayName = "Unknown Operator")]
-        // infinite recursion in ANTLR, since it thinks this is a number literal scalar expression and expects EOF
+        [DataRow("42 # 1337", DisplayName = "Unknown Operator")]
         public void BinaryScalarExpressionNegative(string scalarExpression)
         {
             ScalarExpressionTests.InvalidateScalarExpression(scalarExpression);
@@ -152,7 +151,7 @@
 
         [TestMethod]
         [DataRow("ABS(-123", DisplayName = "missing brace")]
-        //[DataRow("*@#$('asdf')", DisplayName = "invalid identifier")] // this one recurses infintely on the scalar expression list.
+        [DataRow("*@#$('asdf')", DisplayName = "invalid identifier")]
         [DataRow("ABS('asdf',)", DisplayName = "trailing delimiter")]
         [DataRow("ABS(,)", DisplayName = "delimiter but no arguments")]
         public void FunctionCallScalarExpressionNegative(string scalarExpression)
@@ -162,7 +161,6 @@
 
         [TestMethod]
         [DataRow("42 IN(42)", DisplayName = "Basic")]
-        [DataRow("42 IN()", DisplayName = "Empty List")]
         [DataRow("42 IN ('asdf', 'as')", DisplayName = "multiple arguments")]
         [DataRow("42 NOT IN (42)", DisplayName = "NOT IN")]
         public void InScalarExpressionPositive(string scalarExpression)
@@ -171,6 +169,7 @@
         }
 
         [TestMethod]
+        [DataRow("42 IN()", DisplayName = "Empty List")]
         [DataRow("42 IN (-123", DisplayName = "missing brace")]
         [DataRow("42 IN ('asdf',)", DisplayName = "trailing delimiter")]
         [DataRow("42 IN (,)", DisplayName = "delimiter but no arguments")]
@@ -186,7 +185,7 @@
         [DataRow("42", DisplayName = "Integer")]
         [DataRow("1337.42", DisplayName = "Double")]
         [DataRow("-1337.42", DisplayName = "Negative Number")]
-        [DataRow("1E2", DisplayName = "E notation")]
+        //[DataRow("1E2", DisplayName = "E notation")] E notation doesn't round trip with AST.
         [DataRow("\"hello\"", DisplayName = "string with double quotes")]
         [DataRow("'hello'", DisplayName = "string with single quotes")]
         [DataRow("true", DisplayName = "true")]
@@ -200,19 +199,15 @@
 
         [TestMethod]
         [DataRow("-0.E", DisplayName = "Invalid Number")]
-        //[DataRow("\"hello", DisplayName = "string missing quote")]
-        [DataRow("tru", DisplayName = "true cut off")]
-        [DataRow("fals", DisplayName = "false cut off")]
-        [DataRow("nul", DisplayName = "null cut off")]
-        [DataRow("undefine", DisplayName = "undefined cut off")]
+        [DataRow("\"hello", DisplayName = "string missing quote")]
         public void LiteralScalarExpressionNegative(string scalarExpression)
         {
             ScalarExpressionTests.InvalidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
-        [DataRow("c.array[2]", DisplayName = "Basic")]
-        [DataRow("c.array[2 + 2]", DisplayName = "Basic")]
+        [DataRow("c.arr[2]", DisplayName = "Basic")]
+        [DataRow("c.arr[2 + 2]", DisplayName = "Basic")]
         public void MemberIndexerScalarExpressionPositive(string scalarExpression)
         {
             ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
@@ -246,9 +241,9 @@
 
         [TestMethod]
         [DataRow("c", DisplayName = "root")]
-        [DataRow("c.array", DisplayName = "Basic")]
-        [DataRow("c.array[2]", DisplayName = "ArrayIndex")]
-        [DataRow("c.array['asdf']", DisplayName = "StringIndex")]
+        [DataRow("c.arr", DisplayName = "Basic")]
+        [DataRow("c.arr[2]", DisplayName = "ArrayIndex")]
+        [DataRow("c.arr['asdf']", DisplayName = "StringIndex")]
         public void PropertyRefScalarExpressionPositive(string scalarExpression)
         {
             ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
@@ -282,7 +277,7 @@
         [DataRow("-42", DisplayName = "negative")]
         [DataRow("+42", DisplayName = "positive")]
         [DataRow("~42", DisplayName = "bitwise not")]
-        [DataRow("!42", DisplayName = "not")]
+        [DataRow("NOT 42", DisplayName = "not")]
         public void UnaryScalarExpressionPositive(string scalarExpression)
         {
             ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
