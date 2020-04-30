@@ -33,7 +33,6 @@ collection_expression
 	;
 collection
 	: IDENTIFIER path_expression?  #InputPathCollection
-	/*| '[' scalar_expression_list? ']' #LiteralArrayCollection*/
 	| '(' sql_query ')' #SubqueryCollection
 	;
 path_expression

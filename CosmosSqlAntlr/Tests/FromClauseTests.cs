@@ -19,11 +19,9 @@
         };
 
         private static readonly string[] inputPathCollections = pathExpressions;
-        //private static readonly string literalArrayCollection = "[1, 2, 3]";
         private static readonly string subqueryCollection = "(SELECT * FROM c)";
         private static readonly string[] collections = new string[]
         {
-            //literalArrayCollection,
             subqueryCollection,
         }.Concat(inputPathCollections).ToArray();
 
