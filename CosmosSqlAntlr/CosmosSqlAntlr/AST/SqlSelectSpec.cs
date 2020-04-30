@@ -1,9 +1,11 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+using CosmosSqlAntlr.Ast.Visitors;
+
+namespace CosmosSqlAntlr.Ast
 {
-    internal abstract class SqlSelectSpec : SqlObject
+    public abstract class SqlSelectSpec : SqlObject
     {
         protected SqlSelectSpec(SqlObjectKind kind)
             : base(kind)

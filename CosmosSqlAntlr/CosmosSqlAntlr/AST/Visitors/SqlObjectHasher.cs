@@ -1,12 +1,12 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast.Visitors
 {
     using System;
     using System.Globalization;
 
-    internal sealed class SqlObjectHasher : SqlObjectVisitor<int>
+    public sealed class SqlObjectHasher : SqlObjectVisitor<int>
     {
         public static readonly SqlObjectHasher Singleton = new SqlObjectHasher(true);
 
@@ -293,17 +293,6 @@ namespace Microsoft.Azure.Cosmos.Sql
             int hashCode = SqlJoinCollectionExpressionHashCode;
             hashCode = CombineHashes(hashCode, sqlJoinCollectionExpression.LeftExpression.Accept(this));
             hashCode = CombineHashes(hashCode, sqlJoinCollectionExpression.RightExpression.Accept(this));
-            return hashCode;
-        }
-
-        public override int Visit(SqlLiteralArrayCollection sqlLiteralArrayCollection)
-        {
-            int hashCode = SqlLiteralArrayCollectionHashCode;
-            for (int i = 0; i < sqlLiteralArrayCollection.Items.Count; i++)
-            {
-                hashCode = CombineHashes(hashCode, sqlLiteralArrayCollection.Items[i].Accept(this));
-            }
-
             return hashCode;
         }
 

@@ -1,12 +1,13 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
     using System;
+	using CosmosSqlAntlr.Ast.Visitors;
     using System.Linq;
 
-    internal sealed class SqlLimitSpec : SqlObject
+    public sealed class SqlLimitSpec : SqlObject
     {
         private const int PremadeLimitIndex = 256;
         private static readonly SqlLimitSpec[] PremadeLimitSpecs = Enumerable

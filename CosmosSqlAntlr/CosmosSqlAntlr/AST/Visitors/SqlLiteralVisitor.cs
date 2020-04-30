@@ -1,9 +1,9 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast.Visitors
 {
-    internal abstract class SqlLiteralVisitor
+    public abstract class SqlLiteralVisitor
     {
         public abstract void Visit(SqlBooleanLiteral literal);
         public abstract void Visit(SqlNullLiteral literal);
@@ -12,7 +12,7 @@ namespace Microsoft.Azure.Cosmos.Sql
         public abstract void Visit(SqlUndefinedLiteral literal);
     }
 
-    internal abstract class SqlLiteralVisitor<TResult>
+    public abstract class SqlLiteralVisitor<TResult>
     {
         public abstract TResult Visit(SqlBooleanLiteral literal);
         public abstract TResult Visit(SqlNullLiteral literal);

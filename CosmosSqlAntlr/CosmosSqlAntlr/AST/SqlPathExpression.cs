@@ -1,9 +1,11 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
-    internal abstract class SqlPathExpression : SqlObject
+    using CosmosSqlAntlr.Ast.Visitors;
+
+    public abstract class SqlPathExpression : SqlObject
     {
         protected SqlPathExpression(SqlObjectKind kind, SqlPathExpression parentPath)
             : base(kind)

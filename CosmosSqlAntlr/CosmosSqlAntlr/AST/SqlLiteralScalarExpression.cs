@@ -1,11 +1,12 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
     using System;
+	using CosmosSqlAntlr.Ast.Visitors;
 
-    internal sealed class SqlLiteralScalarExpression : SqlScalarExpression
+    public sealed class SqlLiteralScalarExpression : SqlScalarExpression
     {
         public static readonly SqlLiteralScalarExpression SqlNullLiteralScalarExpression = new SqlLiteralScalarExpression(SqlNullLiteral.Create());
         public static readonly SqlLiteralScalarExpression SqlTrueLiteralScalarExpression = new SqlLiteralScalarExpression(SqlBooleanLiteral.True);

@@ -1,13 +1,14 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
     using System;
+	using CosmosSqlAntlr.Ast.Visitors;
 
-    internal class SqlQuery : SqlObject
+    public sealed class SqlQuery : SqlObject
     {
-        protected SqlQuery(
+        public SqlQuery(
             SqlSelectClause selectClause,
             SqlFromClause fromClause,
             SqlWhereClause whereClause,

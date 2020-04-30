@@ -1,9 +1,12 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+
+namespace CosmosSqlAntlr.Ast
 {
-    internal sealed class SqlJoinCollectionExpression : SqlCollectionExpression
+    using CosmosSqlAntlr.Ast.Visitors;
+
+    public sealed class SqlJoinCollectionExpression : SqlCollectionExpression
     {
         private SqlJoinCollectionExpression(
             SqlCollectionExpression leftExpression,

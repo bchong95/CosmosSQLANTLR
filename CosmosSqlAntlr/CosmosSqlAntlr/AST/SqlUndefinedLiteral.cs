@@ -1,9 +1,13 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+
+
+namespace CosmosSqlAntlr.Ast
 {
-    internal sealed class SqlUndefinedLiteral : SqlLiteral
+    using CosmosSqlAntlr.Ast.Visitors;
+
+    public sealed class SqlUndefinedLiteral : SqlLiteral
     {
         private static readonly SqlUndefinedLiteral Singleton = new SqlUndefinedLiteral();
 

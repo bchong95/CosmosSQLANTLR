@@ -1,11 +1,12 @@
 ﻿// ------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 // ------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
     using System;
+	using CosmosSqlAntlr.Ast.Visitors;
 
-    internal sealed class SqlParameter : SqlObject
+    public sealed class SqlParameter : SqlObject
     {
         private SqlParameter(string name)
             : base(SqlObjectKind.Parameter)

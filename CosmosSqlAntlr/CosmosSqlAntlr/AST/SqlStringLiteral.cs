@@ -1,12 +1,13 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
     using System;
     using System.Collections.Generic;
+    using CosmosSqlAntlr.Ast.Visitors;
 
-    internal sealed class SqlStringLiteral : SqlLiteral
+    public sealed class SqlStringLiteral : SqlLiteral
     {
         public static SqlStringLiteral Empty = new SqlStringLiteral(string.Empty);
         private static readonly Dictionary<string, SqlStringLiteral> FrequentlyUsedStrings = new Dictionary<string, SqlStringLiteral>()

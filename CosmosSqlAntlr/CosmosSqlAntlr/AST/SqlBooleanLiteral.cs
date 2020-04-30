@@ -1,9 +1,12 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+
+namespace CosmosSqlAntlr.Ast
 {
-    internal sealed class SqlBooleanLiteral : SqlLiteral
+    using CosmosSqlAntlr.Ast.Visitors;
+
+    public sealed class SqlBooleanLiteral : SqlLiteral
     {
         public static readonly SqlBooleanLiteral True = new SqlBooleanLiteral(true);
         public static readonly SqlBooleanLiteral False = new SqlBooleanLiteral(false);

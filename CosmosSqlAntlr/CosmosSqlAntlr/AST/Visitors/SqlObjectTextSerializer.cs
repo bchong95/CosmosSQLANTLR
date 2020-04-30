@@ -1,7 +1,7 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast.Visitors
 {
     using System;
     using System.Buffers;
@@ -11,7 +11,7 @@ namespace Microsoft.Azure.Cosmos.Sql
     using System.Linq;
     using System.Text;
 
-    internal sealed class SqlObjectTextSerializer : SqlObjectVisitor
+    public sealed class SqlObjectTextSerializer : SqlObjectVisitor
     {
         private const string Tab = "    ";
         private static readonly char[] CharactersThatNeedEscaping = Enumerable
@@ -280,23 +280,6 @@ namespace Microsoft.Azure.Cosmos.Sql
         {
             this.writer.Write("LIMIT ");
             sqlObject.LimitExpression.Accept(this);
-        }
-
-        public override void Visit(SqlLiteralArrayCollection sqlLiteralArrayCollection)
-        {
-            this.writer.Write("[");
-
-            for (int i = 0; i < sqlLiteralArrayCollection.Items.Count; i++)
-            {
-                if (i > 0)
-                {
-                    this.writer.Write(", ");
-                }
-
-                sqlLiteralArrayCollection.Items[i].Accept(this);
-            }
-
-            this.writer.Write("]");
         }
 
         public override void Visit(SqlLiteralScalarExpression sqlLiteralScalarExpression)

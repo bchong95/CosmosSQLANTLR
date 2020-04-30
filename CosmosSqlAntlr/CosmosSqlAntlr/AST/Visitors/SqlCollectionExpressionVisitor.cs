@@ -1,9 +1,9 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast.Visitors
 {
-    internal abstract class SqlCollectionExpressionVisitor
+    public abstract class SqlCollectionExpressionVisitor
     {
         public abstract void Visit(SqlAliasedCollectionExpression collectionExpression);
 
@@ -12,7 +12,7 @@ namespace Microsoft.Azure.Cosmos.Sql
         public abstract void Visit(SqlJoinCollectionExpression collectionExpression);
     }
 
-    internal abstract class SqlCollectionExpressionVisitor<TResult>
+    public abstract class SqlCollectionExpressionVisitor<TResult>
     {
         public abstract TResult Visit(SqlAliasedCollectionExpression collectionExpression);
 
@@ -21,7 +21,7 @@ namespace Microsoft.Azure.Cosmos.Sql
         public abstract TResult Visit(SqlJoinCollectionExpression collectionExpression);
     }
 
-    internal abstract class SqlCollectionExpressionVisitor<TArg, TResult>
+    public abstract class SqlCollectionExpressionVisitor<TArg, TResult>
     {
         public abstract TResult Visit(SqlAliasedCollectionExpression collectionExpression, TArg input);
 

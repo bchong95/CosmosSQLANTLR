@@ -2,13 +2,11 @@
 {
     using Antlr4.Runtime.Misc;
     using Antlr4.Runtime.Tree;
-    using Microsoft.Azure.Cosmos;
-    using Microsoft.Azure.Cosmos.Sql;
-    using Microsoft.CodeAnalysis.Operations;
+    using CosmosSqlAntlr.Ast;
     using System;
+	using CosmosSqlAntlr.Ast.Visitors;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
-    using System.IO;
 
     /// <summary>
     /// Converts from ANTLR's CST to a CosmosDB SQL AST.
@@ -17,7 +15,7 @@
     /// In general the ANTLR parser could in theory generate an incorrect CST if the grammar file has a mistake,
     /// while and AST is strongly typed and any AST is a valid grammar (as long as the AST is defined correctly).
     /// </summary>
-    internal sealed class CstToAstVisitor : sqlBaseVisitor<SqlObject>
+    public sealed class CstToAstVisitor : sqlBaseVisitor<SqlObject>
     {
         private static readonly IReadOnlyDictionary<string, SqlBinaryScalarOperatorKind> binaryOperatorKindLookup = new Dictionary<string, SqlBinaryScalarOperatorKind>(StringComparer.OrdinalIgnoreCase)
         {

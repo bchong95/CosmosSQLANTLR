@@ -1,9 +1,9 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
-    internal enum SqlObjectKind
+    public enum SqlObjectKind
     {
         AliasedCollectionExpression,
         ArrayCreateScalarExpression,

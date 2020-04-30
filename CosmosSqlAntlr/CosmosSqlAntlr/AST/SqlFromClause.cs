@@ -1,11 +1,12 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
     using System;
+	using CosmosSqlAntlr.Ast.Visitors;
 
-    internal sealed class SqlFromClause : SqlObject
+    public sealed class SqlFromClause : SqlObject
     {
         private SqlFromClause(SqlCollectionExpression expression)
             : base(SqlObjectKind.FromClause)

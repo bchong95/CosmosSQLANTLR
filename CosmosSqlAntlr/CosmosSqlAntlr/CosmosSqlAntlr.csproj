@@ -67,7 +67,6 @@
     <Compile Include="AST\SqlJoinCollectionExpression.cs" />
     <Compile Include="AST\SqlLimitSpec.cs" />
     <Compile Include="AST\SqlLiteral.cs" />
-    <Compile Include="AST\SqlLiteralArrayCollection.cs" />
     <Compile Include="AST\SqlLiteralScalarExpression.cs" />
     <Compile Include="AST\SqlMemberIndexerScalarExpression.cs" />
     <Compile Include="AST\SqlNullLiteral.cs" />
@@ -115,8 +114,6 @@
     <Compile Include="AST\Visitors\SqlPathExpressionVisitor.cs" />
     <Compile Include="AST\Visitors\SqlScalarExpressionVisitor.cs" />
     <Compile Include="AST\Visitors\SqlSelectSpecVisitor.cs" />
-    <Compile Include="BtiUtils.cs" />
-    <Compile Include="CalculatorVisitor.cs" />
     <Compile Include="CstToAstVisitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Antlr4 Include="sql.g4" />

@@ -1,11 +1,12 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
     using System;
+	using CosmosSqlAntlr.Ast.Visitors;
 
-    internal sealed class SqlSubqueryCollection : SqlCollection
+    public sealed class SqlSubqueryCollection : SqlCollection
     {
         private SqlSubqueryCollection(SqlQuery query)
             : base(SqlObjectKind.SubqueryCollection)

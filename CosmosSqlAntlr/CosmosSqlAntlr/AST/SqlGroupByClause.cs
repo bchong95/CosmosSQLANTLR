@@ -1,12 +1,13 @@
 ﻿// ------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 // ------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
     using System;
+	using CosmosSqlAntlr.Ast.Visitors;
     using System.Collections.Generic;
 
-    internal sealed class SqlGroupByClause : SqlObject
+    public sealed class SqlGroupByClause : SqlObject
     {
         private SqlGroupByClause(IReadOnlyList<SqlScalarExpression> expressions)
             : base(SqlObjectKind.GroupByClause)

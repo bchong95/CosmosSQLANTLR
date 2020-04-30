@@ -1,12 +1,13 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
     using System;
     using System.Collections.Generic;
+    using CosmosSqlAntlr.Ast.Visitors;
 
-    internal sealed class SqlInScalarExpression : SqlScalarExpression
+    public sealed class SqlInScalarExpression : SqlScalarExpression
     {
         private SqlInScalarExpression(SqlScalarExpression expression, bool not, IReadOnlyList<SqlScalarExpression> items)
             : base(SqlObjectKind.InScalarExpression)

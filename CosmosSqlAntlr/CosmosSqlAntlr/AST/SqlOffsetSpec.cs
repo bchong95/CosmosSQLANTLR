@@ -1,12 +1,13 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
     using System;
+	using CosmosSqlAntlr.Ast.Visitors;
     using System.Linq;
 
-    internal sealed class SqlOffsetSpec : SqlObject
+    public sealed class SqlOffsetSpec : SqlObject
     {
         private const int PremadeOffsetIndex = 256;
         private static readonly SqlOffsetSpec[] PremadeOffsetSpecs = Enumerable

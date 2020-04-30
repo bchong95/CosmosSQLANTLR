@@ -1,9 +1,9 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast.Visitors
 {
-    internal abstract class SqlScalarExpressionVisitor
+    public abstract class SqlScalarExpressionVisitor
     {
         public abstract void Visit(SqlArrayCreateScalarExpression scalarExpression);
         public abstract void Visit(SqlArrayScalarExpression scalarExpression);
@@ -23,7 +23,7 @@ namespace Microsoft.Azure.Cosmos.Sql
         public abstract void Visit(SqlUnaryScalarExpression scalarExpression);
     }
 
-    internal abstract class SqlScalarExpressionVisitor<TResult>
+    public abstract class SqlScalarExpressionVisitor<TResult>
     {
         public abstract TResult Visit(SqlArrayCreateScalarExpression scalarExpression);
         public abstract TResult Visit(SqlArrayScalarExpression scalarExpression);
@@ -43,7 +43,7 @@ namespace Microsoft.Azure.Cosmos.Sql
         public abstract TResult Visit(SqlUnaryScalarExpression scalarExpression);
     }
 
-    internal abstract class SqlScalarExpressionVisitor<TArg, TOutput>
+    public abstract class SqlScalarExpressionVisitor<TArg, TOutput>
     {
         public abstract TOutput Visit(SqlArrayCreateScalarExpression scalarExpression, TArg input);
         public abstract TOutput Visit(SqlArrayScalarExpression scalarExpression, TArg input);

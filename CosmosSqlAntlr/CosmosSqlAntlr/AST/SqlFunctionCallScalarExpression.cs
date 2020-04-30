@@ -1,12 +1,13 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
     using System;
     using System.Collections.Generic;
+    using CosmosSqlAntlr.Ast.Visitors;
 
-    internal sealed class SqlFunctionCallScalarExpression : SqlScalarExpression
+    public sealed class SqlFunctionCallScalarExpression : SqlScalarExpression
     {
         private const string UdfNamespaceQualifier = "udf.";
         private static readonly Dictionary<string, SqlIdentifier> FunctionIdentifiers = new Dictionary<string, SqlIdentifier>(StringComparer.OrdinalIgnoreCase)

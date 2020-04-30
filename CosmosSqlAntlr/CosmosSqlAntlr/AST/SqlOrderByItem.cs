@@ -1,11 +1,11 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
     using System;
-
-    internal sealed class SqlOrderByItem : SqlObject
+	using CosmosSqlAntlr.Ast.Visitors;
+    public sealed class SqlOrderByItem : SqlObject
     {
         private SqlOrderByItem(
             SqlScalarExpression expression,

@@ -2,7 +2,7 @@ namespace CosmosSqlAntlr.Tests
 {
     using Antlr4.Runtime;
     using Antlr4.Runtime.Misc;
-    using Microsoft.Azure.Cosmos.Sql;
+    using CosmosSqlAntlr.Ast;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
     using System.Runtime.ExceptionServices;

@@ -1,9 +1,10 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
     using System;
+	using CosmosSqlAntlr.Ast.Visitors;
 
     // This class represents a collection expression that is comprised of a collection definition and an 
     // optional alias.
@@ -11,7 +12,7 @@ namespace Microsoft.Azure.Cosmos.Sql
     //  FROM Person p
     //  FROM [1, 3, 5, 7] a
 
-    internal sealed class SqlAliasedCollectionExpression : SqlCollectionExpression
+    public sealed class SqlAliasedCollectionExpression : SqlCollectionExpression
     {
         private SqlAliasedCollectionExpression(
             SqlCollection collection,

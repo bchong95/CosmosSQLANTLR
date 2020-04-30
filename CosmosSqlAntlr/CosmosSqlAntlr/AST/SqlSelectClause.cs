@@ -1,11 +1,12 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
     using System;
+	using CosmosSqlAntlr.Ast.Visitors;
 
-    internal sealed class SqlSelectClause : SqlObject
+    public sealed class SqlSelectClause : SqlObject
     {
         public static readonly SqlSelectClause SelectStar = new SqlSelectClause(SqlSelectStarSpec.Singleton);
 

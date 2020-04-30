@@ -1,12 +1,13 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
     using System;
     using System.Linq;
+    using CosmosSqlAntlr.Ast.Visitors;
 
-    internal sealed class SqlTopSpec : SqlObject
+    public sealed class SqlTopSpec : SqlObject
     {
         private const int PremadeTopIndex = 256;
         private static readonly SqlTopSpec[] PremadeTopSpecs = Enumerable

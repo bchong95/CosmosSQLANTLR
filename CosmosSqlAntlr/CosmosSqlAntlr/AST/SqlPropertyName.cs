@@ -1,12 +1,13 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
     using System;
     using System.Collections.Generic;
+    using CosmosSqlAntlr.Ast.Visitors;
 
-    internal sealed class SqlPropertyName : SqlObject
+    public sealed class SqlPropertyName : SqlObject
     {
         private static readonly Dictionary<string, SqlPropertyName> SystemProperties = new Dictionary<string, SqlPropertyName>()
         {

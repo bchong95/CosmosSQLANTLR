@@ -1,12 +1,13 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
     using System;
     using System.Collections.Generic;
+    using CosmosSqlAntlr.Ast.Visitors;
 
-    internal sealed class SqlSelectListSpec : SqlSelectSpec
+    public sealed class SqlSelectListSpec : SqlSelectSpec
     {
         private SqlSelectListSpec(IReadOnlyList<SqlSelectItem> items)
             : base(SqlObjectKind.SelectListSpec)

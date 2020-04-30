@@ -1,11 +1,12 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
+    using CosmosSqlAntlr.Ast.Visitors;
     using System.Collections.Generic;
 
-    internal sealed class SqlIdentifier : SqlObject
+    public sealed class SqlIdentifier : SqlObject
     {
         private static readonly Dictionary<string, SqlIdentifier> FrequentIdentifiers = new Dictionary<string, SqlIdentifier>()
         {

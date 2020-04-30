@@ -1,9 +1,12 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+
+namespace CosmosSqlAntlr.Ast
 {
-    internal sealed class SqlNumberPathExpression : SqlPathExpression
+    using CosmosSqlAntlr.Ast.Visitors;
+
+    public sealed class SqlNumberPathExpression : SqlPathExpression
     {
         private SqlNumberPathExpression(SqlPathExpression parentPath, SqlNumberLiteral value)
             : base(SqlObjectKind.NumberPathExpression, parentPath)

@@ -1,10 +1,11 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
-    internal abstract class SqlLiteral : SqlObject
+    using CosmosSqlAntlr.Ast.Visitors;
+
+    public abstract class SqlLiteral : SqlObject
     {
         protected SqlLiteral(SqlObjectKind kind)
             : base(kind)

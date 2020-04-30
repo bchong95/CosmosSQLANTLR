@@ -1,12 +1,13 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
     using System;
     using System.Collections.Generic;
+    using CosmosSqlAntlr.Ast.Visitors;
 
-    internal sealed class SqlObjectCreateScalarExpression : SqlScalarExpression
+    public sealed class SqlObjectCreateScalarExpression : SqlScalarExpression
     {
         private SqlObjectCreateScalarExpression(IEnumerable<SqlObjectProperty> properties)
             : base(SqlObjectKind.ObjectCreateScalarExpression)

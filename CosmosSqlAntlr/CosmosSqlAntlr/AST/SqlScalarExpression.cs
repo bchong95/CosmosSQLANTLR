@@ -1,9 +1,11 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
-    internal abstract class SqlScalarExpression : SqlObject
+    using CosmosSqlAntlr.Ast.Visitors;
+
+    public abstract class SqlScalarExpression : SqlObject
     {
         protected SqlScalarExpression(SqlObjectKind kind)
             : base(kind)

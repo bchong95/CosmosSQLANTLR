@@ -1,12 +1,13 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
+    using CosmosSqlAntlr.Ast.Visitors;
     using System.Collections.Generic;
     using System.Linq;
 
-    internal sealed class SqlNumberLiteral : SqlLiteral
+    public sealed class SqlNumberLiteral : SqlLiteral
     {
         private const int Capacity = 256;
         private static readonly Dictionary<long, SqlNumberLiteral> FrequentLongs = Enumerable

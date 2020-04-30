@@ -1,9 +1,11 @@
 ﻿//------------------------------------------------------------
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //------------------------------------------------------------
-namespace Microsoft.Azure.Cosmos.Sql
+namespace CosmosSqlAntlr.Ast
 {
-    internal sealed class SqlBetweenScalarExpression : SqlScalarExpression
+    using CosmosSqlAntlr.Ast.Visitors;
+
+    public sealed class SqlBetweenScalarExpression : SqlScalarExpression
     {
         private SqlBetweenScalarExpression(
             SqlScalarExpression expression,
