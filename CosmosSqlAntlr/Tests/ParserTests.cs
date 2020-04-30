@@ -17,9 +17,20 @@ namespace CosmosSqlAntlr.Tests
             sqlLexer lexer = new sqlLexer(str);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             sqlParser parser = new sqlParser(tokens);
+            parser.ErrorHandler = new ThrowExceptionOnErrors();
             ErrorListener<IToken> listener = new ErrorListener<IToken>(parser, lexer, tokens);
             parser.AddErrorListener(listener);
-            sqlParser.ProgramContext tree = parser.program();
+
+            sqlParser.ProgramContext tree;
+            try
+            {
+                 tree = parser.program();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Parser ran into error for query:{query}.", ex);
+            }
+
             Assert.IsFalse(listener.had_error, $"Parser ran into error: '{tree.OutputTree(tokens)}' for query: {query}");
             Console.WriteLine(tree.OutputTree(tokens));
             SqlObject sqlObject = new CstToAstVisitor().Visit(tree);
@@ -91,9 +102,11 @@ namespace CosmosSqlAntlr.Tests
         private static string NormalizeText(string text)
         {
             return text
+                .ToLower()
                 .Replace("(", string.Empty)
                 .Replace(")", string.Empty)
-                .ToLower()
+                .Replace("asc", string.Empty)
+                .Replace("desc", string.Empty)
                 .Replace("'", "\"")
                 .Replace(" ", string.Empty)
                 .Replace("+", string.Empty);

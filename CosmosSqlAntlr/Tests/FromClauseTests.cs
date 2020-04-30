@@ -12,19 +12,19 @@
         private static readonly string stringPathExpression = "c.blah['asdf']";
         private static readonly string[] pathExpressions = new string[]
         {
-                baseInputPathExpression,
-                recursiveInputPathExpression,
-                numberPathExpression,
-                stringPathExpression,
+            baseInputPathExpression,
+            recursiveInputPathExpression,
+            numberPathExpression,
+            stringPathExpression,
         };
 
         private static readonly string[] inputPathCollections = pathExpressions;
-        private static readonly string literalArrayCollection = "[1, 2, 3]";
+        //private static readonly string literalArrayCollection = "[1, 2, 3]";
         private static readonly string subqueryCollection = "(SELECT * FROM c)";
         private static readonly string[] collections = new string[]
         {
-                literalArrayCollection,
-                subqueryCollection,
+            //literalArrayCollection,
+            subqueryCollection,
         }.Concat(inputPathCollections).ToArray();
 
         [TestMethod]

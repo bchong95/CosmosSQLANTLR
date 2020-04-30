@@ -6,6 +6,7 @@ program
 
 sql_query : select_clause from_clause? where_clause? group_by_clause? order_by_clause? offset_limit_clause? ;
 
+/*--------------------------------------------------------------------------------*/
 /* SELECT */
 /*--------------------------------------------------------------------------------*/
 select_clause : K_SELECT K_DISTINCT? top_spec? selection ;
@@ -21,6 +22,7 @@ select_list_spec : select_item ( ',' select_item )* ;
 select_item : scalar_expression (K_AS IDENTIFIER)? ;
 /*--------------------------------------------------------------------------------*/
 
+/*--------------------------------------------------------------------------------*/
 /* FROM */
 /*--------------------------------------------------------------------------------*/
 from_clause : K_FROM collection_expression ;
@@ -30,28 +32,31 @@ collection_expression
 	| collection_expression K_JOIN collection_expression #JoinCollectionExpression
 	;
 collection
-	: path_expression #InputPathCollection
-	| '[' (scalar_expression (',' scalar_expression)*)? ']' #LiteralArrayCollection
+	: IDENTIFIER path_expression?  #InputPathCollection
+	/*| '[' scalar_expression_list? ']' #LiteralArrayCollection*/
 	| '(' sql_query ')' #SubqueryCollection
 	;
 path_expression
-	: IDENTIFIER'.'path_expression #RecursiveIdentifierPathExpression
+	: path_expression'.'IDENTIFIER #IdentifierPathExpression
 	| path_expression'[' NUMERIC_LITERAL ']' #NumberPathExpression
 	| path_expression'[' STRING_LITERAL ']' #StringPathExpression
-	| IDENTIFIER #BaseIdentifierPathExpression
+	| /*epsilon*/ #EpsilonPathExpression
 	;
 /*--------------------------------------------------------------------------------*/
 
+/*--------------------------------------------------------------------------------*/
 /* WHERE */
 /*--------------------------------------------------------------------------------*/
 where_clause : K_WHERE scalar_expression ;
 /*--------------------------------------------------------------------------------*/
 
+/*--------------------------------------------------------------------------------*/
 /* GROUP BY */
 /*--------------------------------------------------------------------------------*/
 group_by_clause : K_GROUP K_BY scalar_expression_list ;
 /*--------------------------------------------------------------------------------*/
 
+/*--------------------------------------------------------------------------------*/
 /* ORDER BY */
 /*--------------------------------------------------------------------------------*/
 order_by_clause : K_ORDER K_BY order_by_items ;
@@ -63,6 +68,7 @@ sort_order
 	;
 /*--------------------------------------------------------------------------------*/
 
+/*--------------------------------------------------------------------------------*/
 /* OFFSET LIMIT */
 /*--------------------------------------------------------------------------------*/
 offset_limit_clause : K_OFFSET offset_count K_LIMIT limit_count;
@@ -70,6 +76,7 @@ offset_count : NUMERIC_LITERAL;
 limit_count : NUMERIC_LITERAL;
 /*--------------------------------------------------------------------------------*/
 
+/*--------------------------------------------------------------------------------*/
 /* SCALAR EXPRESSIONs */
 /*--------------------------------------------------------------------------------*/
 scalar_expression
@@ -121,6 +128,7 @@ object_propertty_list : object_property (',' object_property)* ;
 object_property : STRING_LITERAL ':' scalar_expression ;
 /*--------------------------------------------------------------------------------*/
 
+/*--------------------------------------------------------------------------------*/
 /* KEYWORDS */
 /*--------------------------------------------------------------------------------*/
 K_AND : A N D;
@@ -150,12 +158,13 @@ K_UDF : U D F;
 K_UNDEFINED : 'undefined';
 K_VALUE : V A L U E;
 K_WHERE : W H E R E;
-
 /*--------------------------------------------------------------------------------*/
+
 WS
    : [ \r\n\t] + -> skip
    ;
 
+/*--------------------------------------------------------------------------------*/
 /* LITERALS */
 /*--------------------------------------------------------------------------------*/
 literal
@@ -182,6 +191,7 @@ IDENTIFIER
 	;
 /*--------------------------------------------------------------------------------*/
 
+/*--------------------------------------------------------------------------------*/
 /* FRAGMENTS */
 /*--------------------------------------------------------------------------------*/
 fragment DIGIT : [0-9];
