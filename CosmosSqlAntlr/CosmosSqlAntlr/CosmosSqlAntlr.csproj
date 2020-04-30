@@ -115,6 +115,8 @@
     <Compile Include="AST\Visitors\SqlScalarExpressionVisitor.cs" />
     <Compile Include="AST\Visitors\SqlSelectSpecVisitor.cs" />
     <Compile Include="CstToAstVisitor.cs" />
+    <Compile Include="ErrorListener.cs" />
+    <Compile Include="LASets.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Antlr4 Include="sql.g4" />
   </ItemGroup>

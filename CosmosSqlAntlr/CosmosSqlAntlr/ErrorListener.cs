@@ -1,5 +1,5 @@
 ﻿// Template generated code from Antlr4BuildTasks.Template v 3.0
-namespace CosmosSqlAntlr.Tests
+namespace CosmosSqlAntlr
 {
     using Antlr4.Runtime;
     using Antlr4.Runtime.Misc;
@@ -8,7 +8,7 @@ namespace CosmosSqlAntlr.Tests
     using System.IO;
     using System.Linq;
 
-    public class ErrorListener<S> : ConsoleErrorListener<S>
+    internal class ErrorListener<S> : ConsoleErrorListener<S>
     {
         public bool had_error;
         private readonly Parser _parser;

@@ -4,7 +4,6 @@
     using Antlr4.Runtime.Tree;
     using CosmosSqlAntlr.Ast;
     using System;
-	using CosmosSqlAntlr.Ast.Visitors;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
 
@@ -17,6 +16,8 @@
     /// </summary>
     public sealed class CstToAstVisitor : sqlBaseVisitor<SqlObject>
     {
+        public static readonly CstToAstVisitor Singleton = new CstToAstVisitor();
+
         private static readonly IReadOnlyDictionary<string, SqlBinaryScalarOperatorKind> binaryOperatorKindLookup = new Dictionary<string, SqlBinaryScalarOperatorKind>(StringComparer.OrdinalIgnoreCase)
         {
             { "+", SqlBinaryScalarOperatorKind.Add },
@@ -46,6 +47,10 @@
             { "NOT", SqlUnaryScalarOperatorKind.Not },
             { "+", SqlUnaryScalarOperatorKind.Plus },
         };
+
+        private CstToAstVisitor()
+        {
+        }
 
         public override SqlObject VisitProgram([NotNull] sqlParser.ProgramContext context)
         {
