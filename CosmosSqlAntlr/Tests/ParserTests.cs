@@ -15,9 +15,13 @@ namespace CosmosSqlAntlr.Tests
                 Assert.Fail($"Failed to parse query: {query}");
             }
 
-            string normalizedQuery = NormalizeText(query);
-            string normalizedToString = NormalizeText(parsedQuery.ToString());
-            Assert.AreEqual(normalizedQuery, normalizedToString);
+            string parsedQueryText = parsedQuery.ToString();
+            if (!SqlQuery.TryParse(parsedQueryText, out SqlQuery reparsedQuery))
+            {
+                Assert.Fail($"Failed to parse query: {parsedQueryText}");
+            }
+
+            Assert.AreEqual(parsedQuery.ToString(), reparsedQuery.ToString());
         }
 
         protected static void Invalidate(string query)
@@ -27,19 +31,6 @@ namespace CosmosSqlAntlr.Tests
             Assert.IsFalse(
                 SqlQuery.TryParse(query, out _),
                 $"Expected failure to parse query: {query}");
-        }
-
-        private static string NormalizeText(string text)
-        {
-            return text
-                .ToLower()
-                .Replace("(", string.Empty)
-                .Replace(")", string.Empty)
-                .Replace("asc", string.Empty)
-                .Replace("desc", string.Empty)
-                .Replace("'", "\"")
-                .Replace(" ", string.Empty)
-                .Replace("+", string.Empty);
         }
     }
 }

@@ -79,27 +79,29 @@ limit_count : NUMERIC_LITERAL;
 /* SCALAR EXPRESSIONs */
 /*--------------------------------------------------------------------------------*/
 scalar_expression
-	: '[' scalar_expression_list? ']' #ArrayCreateScalarExpression
-	| K_ARRAY '(' sql_query ')' #ArrayScalarExpression
-	| scalar_expression K_NOT? K_BETWEEN scalar_expression K_AND scalar_expression #BetweenScalarExpression
-	| scalar_expression binary_operator scalar_expression #BinaryScalarExpression
+	: scalar_expression '?' scalar_expression ':' scalar_expression #ConditionalScalarExpression
 	| scalar_expression '??' scalar_expression #CoalesceScalarExpression
-	| scalar_expression '?' scalar_expression ':' scalar_expression #ConditionalScalarExpression
-	| K_EXISTS '(' sql_query ')' #ExistsScalarExpression
-	| (K_UDF '.')? IDENTIFIER '(' scalar_expression_list? ')' #FunctionCallScalarExpression
-	| scalar_expression K_NOT? K_IN '(' scalar_expression_list ')' #InScalarExpression
-	| literal #LiteralScalarExpression
-	| scalar_expression '[' scalar_expression ']' #MemberIndexerScalarExpression
-	| '{' object_propertty_list? '}' #ObjectCreateScalarExpression
-	| IDENTIFIER #PropertyRefScalarExpressionBase
-	| scalar_expression '.' IDENTIFIER #PropertyRefScalarExpressionRecursive
-	| '(' sql_query ')' #SubqueryScalarExpression
-	| unary_operator scalar_expression #UnaryScalarExpression
+	| logical_scalar_expression #LogicalScalarExpression
+	| binary_scalar_expression K_NOT? K_BETWEEN binary_scalar_expression K_AND binary_scalar_expression #BetweenScalarExpression
 	;
-scalar_expression_list : scalar_expression ( ',' scalar_expression )* ;
+
+logical_scalar_expression
+	: binary_scalar_expression
+	| in_scalar_expression
+	| logical_scalar_expression (K_AND | K_OR) logical_scalar_expression
+	;
+
+in_scalar_expression
+	: binary_scalar_expression K_NOT? K_IN scalar_expression_list
+	;
+
+binary_scalar_expression
+	: unary_scalar_expression
+	| binary_scalar_expression binary_operator binary_scalar_expression
+	;
+
 binary_operator
 	: '+' 
-	| K_AND 
 	| '&' 
 	| '|' 
 	| '^' 
@@ -112,16 +114,39 @@ binary_operator
 	| '%' 
 	| '*' 
 	| '!=' 
-	| K_OR 
 	| '||' 
 	| '-'
 	;
+
+unary_scalar_expression
+	: primary_expression
+	| unary_operator unary_scalar_expression
+	;
+
 unary_operator
 	: '-' 
 	| '+' 
 	| '~' 
 	| K_NOT
 	;
+
+primary_expression
+	: IDENTIFIER #PropertyRefScalarExpressionBase
+	| PARAMETER #ParameterRefScalarExpression
+	| literal #LiteralScalarExpression
+	| '[' scalar_expression_list? ']' #ArrayCreateScalarExpression
+	| '{' object_propertty_list? '}' #ObjectCreateScalarExpression
+	| (K_UDF '.')? IDENTIFIER '(' scalar_expression_list? ')' #FunctionCallScalarExpression
+	| '(' scalar_expression ')' #ParenthesizedScalarExperession
+	| '(' sql_query ')' #SubqueryScalarExpression
+	| primary_expression '.' IDENTIFIER #PropertyRefScalarExpressionRecursive
+	| primary_expression '[' scalar_expression  ']' #MemberIndexerScalarExpression
+	| K_EXISTS '(' sql_query ')' #ExistsScalarExpression
+	| K_ARRAY '(' sql_query ')' #ArrayScalarExpression
+	;
+
+scalar_expression_list : scalar_expression (',' scalar_expression)*;
+
 object_propertty_list : object_property (',' object_property)* ;
 
 object_property : STRING_LITERAL ':' scalar_expression ;
@@ -181,12 +206,32 @@ NUMERIC_LITERAL
 	;
 
 STRING_LITERAL
-	: ('\'' | '"') ( ~'\'' | '\'\'' )* ('\'' | '"')
+	: ('\'' | '"') (ESC | SAFECODEPOINT)* ('\'' | '"')
 	;
+
+fragment ESC
+	: '\\' (["\\/bfnrt] | UNICODE)
+	;
+
+fragment UNICODE
+   : 'u' HEX HEX HEX HEX
+   ;
+
+fragment HEX
+   : [0-9a-fA-F]
+   ;
+
+fragment SAFECODEPOINT
+   : ~ ["\\\u0000-\u001F]
+   ;
 
 IDENTIFIER
 	:
 	| [a-zA-Z_][a-zA-Z_]*DIGIT*
+	;
+
+PARAMETER
+	: '@'IDENTIFIER
 	;
 /*--------------------------------------------------------------------------------*/
 
