@@ -263,6 +263,13 @@
         }
 
         [TestMethod]
+        [DataRow("@name", DisplayName = "Basic")]
+        public void ParameterRefScalarExpressionPositive(string scalarExpression)
+        {
+            ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
+        }
+
+        [TestMethod]
         [DataRow("c", DisplayName = "root")]
         [DataRow("c.arr", DisplayName = "Basic")]
         [DataRow("c.arr[2]", DisplayName = "ArrayIndex")]

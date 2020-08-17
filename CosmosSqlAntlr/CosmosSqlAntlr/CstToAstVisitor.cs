@@ -195,8 +195,22 @@
         {
             Contract.Requires(context != null);
 
-            Number64 topCount = CstToAstVisitor.GetNumber64ValueFromNode(context.NUMERIC_LITERAL());
-            return SqlTopSpec.Create(SqlNumberLiteral.Create(topCount));
+            SqlTopSpec sqlTopSpec;
+            if (context.NUMERIC_LITERAL() != null)
+            {
+                Number64 topCount = CstToAstVisitor.GetNumber64ValueFromNode(context.NUMERIC_LITERAL());
+                sqlTopSpec = SqlTopSpec.Create(SqlNumberLiteral.Create(topCount));
+            }
+            else if (context.PARAMETER() != null)
+            {
+                sqlTopSpec = SqlTopSpec.Create(SqlParameter.Create(context.PARAMETER().GetText()));
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
+
+            return sqlTopSpec;
         }
         #endregion
         #region FROM
@@ -368,18 +382,66 @@
         public override SqlObject VisitOffset_limit_clause([NotNull] sqlParser.Offset_limit_clauseContext context)
         {
             Contract.Requires(context != null);
+            Contract.Requires(context.offset_count() != null);
+            Contract.Requires(context.limit_count() != null);
 
-            SqlOffsetSpec sqlOffsetSpec = SqlOffsetSpec.Create(
-                SqlNumberLiteral.Create(
-                    CstToAstVisitor.GetNumber64ValueFromNode(
-                        context.offset_count().NUMERIC_LITERAL())));
-
-            SqlLimitSpec sqlLimitSpec = SqlLimitSpec.Create(
-                SqlNumberLiteral.Create(
-                    CstToAstVisitor.GetNumber64ValueFromNode(
-                        context.limit_count().NUMERIC_LITERAL())));
+            SqlOffsetSpec sqlOffsetSpec = (SqlOffsetSpec)this.Visit(context.offset_count());
+            SqlLimitSpec sqlLimitSpec = (SqlLimitSpec)this.Visit(context.limit_count());
 
             return SqlOffsetLimitClause.Create(sqlOffsetSpec, sqlLimitSpec);
+        }
+
+        public override SqlObject VisitOffset_count([NotNull] sqlParser.Offset_countContext context)
+        {
+            Contract.Requires(context != null);
+
+            SqlOffsetSpec sqlOffsetSpec;
+            if (context.NUMERIC_LITERAL() != null)
+            {
+                sqlOffsetSpec = SqlOffsetSpec.Create(
+                    SqlNumberLiteral.Create(
+                        CstToAstVisitor.GetNumber64ValueFromNode(
+                            context.NUMERIC_LITERAL())));
+            }
+            else if (context.PARAMETER() != null)
+            {
+                sqlOffsetSpec = SqlOffsetSpec.Create(
+                    SqlParameter.Create(
+                        context.PARAMETER().GetText()));
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            return sqlOffsetSpec;
+        }
+
+        public override SqlObject VisitLimit_count([NotNull] sqlParser.Limit_countContext context)
+        {
+            Contract.Requires(context != null);
+
+            SqlLimitSpec sqlLimitSpec;
+            if (context.NUMERIC_LITERAL() != null)
+            {
+                sqlLimitSpec = SqlLimitSpec.Create(
+                    SqlNumberLiteral.Create(
+                        CstToAstVisitor.GetNumber64ValueFromNode(
+                            context.NUMERIC_LITERAL())));
+            }
+            else if (context.PARAMETER() != null)
+            {
+                sqlLimitSpec = SqlLimitSpec.Create(
+                    SqlParameter.Create(
+                        context.PARAMETER().GetText()));
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            return sqlLimitSpec;
+
         }
         #endregion
         #region ScalarExpressions
@@ -599,6 +661,13 @@
             return SqlObjectCreateScalarExpression.Create(properties);
         }
 
+        public override SqlObject VisitParameterRefScalarExpression([NotNull] sqlParser.ParameterRefScalarExpressionContext context)
+        {
+            Contract.Requires(context != null);
+
+            return SqlParameterRefScalarExpression.Create(SqlParameter.Create(context.PARAMETER().GetText()));
+        }
+
         public override SqlObject VisitPropertyRefScalarExpressionBase([NotNull] sqlParser.PropertyRefScalarExpressionBaseContext context)
         {
             Contract.Requires(context != null);
@@ -682,11 +751,6 @@
         }
         #endregion
         #region NOT IMPLEMENTED ON PURPOSE
-        public override SqlObject VisitLimit_count([NotNull] sqlParser.Limit_countContext context)
-        {
-            throw new NotSupportedException();
-        }
-
         public override SqlObject VisitLiteral([NotNull] sqlParser.LiteralContext context)
         {
             throw new NotSupportedException();
@@ -698,11 +762,6 @@
         }
 
         public override SqlObject VisitObject_property([NotNull] sqlParser.Object_propertyContext context)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override SqlObject VisitOffset_count([NotNull] sqlParser.Offset_countContext context)
         {
             throw new NotSupportedException();
         }

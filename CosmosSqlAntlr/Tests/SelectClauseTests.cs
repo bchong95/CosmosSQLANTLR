@@ -38,6 +38,7 @@
         public void Top()
         {
             ParserTests.Validate("SELECT TOP 5 *");
+            ParserTests.Validate("SELECT TOP @TOPCOUNT *");
             ParserTests.Invalidate("SELECT TOP 'asdf' *");
         }
     }

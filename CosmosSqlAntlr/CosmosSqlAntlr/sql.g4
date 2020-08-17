@@ -10,7 +10,7 @@ sql_query : select_clause from_clause? where_clause? group_by_clause? order_by_c
 /* SELECT */
 /*--------------------------------------------------------------------------------*/
 select_clause : K_SELECT K_DISTINCT? top_spec? selection ;
-top_spec : K_TOP NUMERIC_LITERAL;
+top_spec : K_TOP (NUMERIC_LITERAL | PARAMETER);
 selection
 	: select_star_spec
 	| select_value_spec 
@@ -71,8 +71,8 @@ sort_order
 /* OFFSET LIMIT */
 /*--------------------------------------------------------------------------------*/
 offset_limit_clause : K_OFFSET offset_count K_LIMIT limit_count;
-offset_count : NUMERIC_LITERAL;
-limit_count : NUMERIC_LITERAL;
+offset_count : NUMERIC_LITERAL | PARAMETER;
+limit_count : NUMERIC_LITERAL | PARAMETER;
 /*--------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------------------------------------*/

@@ -9,6 +9,7 @@
         public void OffsetLimit()
         {
             OffsetLimitClauseTests.ValidateOffsetLimit("OFFSET 10 LIMIT 10");
+            OffsetLimitClauseTests.ValidateOffsetLimit("OFFSET @OFFSETCOUNT LIMIT @LIMITCOUNT");
 
             OffsetLimitClauseTests.InvalidateOffsetLimit("OFFSET 'asdf' LIMIT 10");
             OffsetLimitClauseTests.InvalidateOffsetLimit("OFFSET 10 ");
