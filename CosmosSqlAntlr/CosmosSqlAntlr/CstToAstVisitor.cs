@@ -3,6 +3,7 @@
     using Antlr4.Runtime.Misc;
     using Antlr4.Runtime.Tree;
     using CosmosSqlAntlr.Ast;
+    using Microsoft.Build.Framework.XamlTypes;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
@@ -437,10 +438,10 @@
 
                 SqlScalarExpression left = (SqlScalarExpression)this.Visit(context.binary_scalar_expression(0));
                 if (!CstToAstVisitor.binaryOperatorKindLookup.TryGetValue(
-                    context.binary_operator().GetText(),
+                    context.children[1].GetText(),
                     out SqlBinaryScalarOperatorKind operatorKind))
                 {
-                    throw new ArgumentOutOfRangeException($"Unknown binary operator: {context.binary_operator().GetText()}.");
+                    throw new ArgumentOutOfRangeException($"Unknown binary operator: {context.children[1].GetText()}.");
                 }
 
                 SqlScalarExpression right = (SqlScalarExpression)this.Visit(context.binary_scalar_expression(1));
@@ -659,51 +660,28 @@
             return this.Visit(parseTree);
         }
 
-        public override SqlObject VisitLogicalScalarExpression([NotNull] sqlParser.LogicalScalarExpressionContext context)
+        public override SqlObject VisitLogical_scalar_expression([NotNull] sqlParser.Logical_scalar_expressionContext context)
         {
             Contract.Requires(context != null);
 
             SqlObject sqlObject;
-            if (context.logical_scalar_expression().binary_scalar_expression() != null)
+            if (context.binary_scalar_expression() != null)
             {
-                sqlObject = this.Visit(context.logical_scalar_expression().binary_scalar_expression());
+                sqlObject = this.Visit(context.binary_scalar_expression());
             }
-            else if (context.logical_scalar_expression().in_scalar_expression() != null)
+            else if (context.in_scalar_expression() != null)
             {
-                sqlObject = this.Visit(context.logical_scalar_expression().in_scalar_expression());
+                sqlObject = this.Visit(context.in_scalar_expression());
             }
             else
             {
-                SqlScalarExpression left = (SqlScalarExpression)this.Visit(context.logical_scalar_expression().logical_scalar_expression(0));
-
-                SqlBinaryScalarOperatorKind operatorKind;
-                if (context.logical_scalar_expression().K_AND() != null)
-                {
-                    operatorKind = SqlBinaryScalarOperatorKind.And;
-                }
-                else if (context.logical_scalar_expression().K_OR() != null)
-                {
-                    operatorKind = SqlBinaryScalarOperatorKind.Or;
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-
-                SqlScalarExpression right = (SqlScalarExpression)this.Visit(context.logical_scalar_expression().logical_scalar_expression(1));
-
-                sqlObject = SqlBinaryScalarExpression.Create(operatorKind, left, right);
+                throw new NotImplementedException();
             }
 
             return sqlObject;
         }
         #endregion
         #region NOT IMPLEMENTED ON PURPOSE
-        public override SqlObject VisitBinary_operator([NotNull] sqlParser.Binary_operatorContext context)
-        {
-            throw new NotSupportedException();
-        }
-
         public override SqlObject VisitLimit_count([NotNull] sqlParser.Limit_countContext context)
         {
             throw new NotSupportedException();

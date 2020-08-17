@@ -88,7 +88,6 @@ scalar_expression
 logical_scalar_expression
 	: binary_scalar_expression
 	| in_scalar_expression
-	| logical_scalar_expression (K_AND | K_OR) logical_scalar_expression
 	;
 
 in_scalar_expression
@@ -97,26 +96,48 @@ in_scalar_expression
 
 binary_scalar_expression
 	: unary_scalar_expression
-	| binary_scalar_expression binary_operator binary_scalar_expression
+	| binary_scalar_expression multiplicative_operator binary_scalar_expression
+	| binary_scalar_expression additive_operator binary_scalar_expression
+	| binary_scalar_expression relational_operator binary_scalar_expression
+	| binary_scalar_expression equality_operator binary_scalar_expression
+	| binary_scalar_expression bitwise_and_operator binary_scalar_expression
+	| binary_scalar_expression bitwise_exclusive_or_operator binary_scalar_expression
+	| binary_scalar_expression bitwise_inclusive_or_operator binary_scalar_expression
+	| binary_scalar_expression K_AND binary_scalar_expression
+	| binary_scalar_expression K_OR binary_scalar_expression
+	| binary_scalar_expression string_concat_operator binary_scalar_expression
 	;
 
-binary_operator
-	: '+' 
-	| '&' 
-	| '|' 
-	| '^' 
+multiplicative_operator
+	: '*' 
 	| '/' 
-	| '=' 
-	| '>' 
-	| '>=' 
-	| '<' 
-	| '<=' 
 	| '%' 
-	| '*' 
-	| '!=' 
-	| '||' 
+	;
+
+additive_operator
+	: '+' 
 	| '-'
 	;
+
+relational_operator
+	: '<'
+	| '>' 
+	| '>=' 
+	| '<='
+	;
+
+equality_operator
+	: '=' 
+	| '!=' 
+	;
+
+bitwise_and_operator : '&' ;
+
+bitwise_exclusive_or_operator : '^';
+
+bitwise_inclusive_or_operator : '|';
+
+string_concat_operator : '||';
 
 unary_scalar_expression
 	: primary_expression

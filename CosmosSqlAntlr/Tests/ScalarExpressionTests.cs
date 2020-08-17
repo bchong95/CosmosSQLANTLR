@@ -86,9 +86,32 @@
         [DataRow("42 +", DisplayName = "Missing Right")]
         [DataRow("AND 1337", DisplayName = "Missing Left")]
         [DataRow("42 # 1337", DisplayName = "Unknown Operator")]
+        [DataRow("1+1", DisplayName = "missing spaces")]
         public void BinaryScalarExpressionNegative(string scalarExpression)
         {
             ScalarExpressionTests.InvalidateScalarExpression(scalarExpression);
+        }
+
+        [TestMethod]
+        [DataRow("1 / 2 * 3 % 4", DisplayName = "Multiplication, division, and remainder -> left to right")]
+        [DataRow("1 + 2 - 3 + 4", DisplayName = "Addition and subtraction -> left to right")]
+        [DataRow("1 < 2 <= 3 > 4 >= 5", DisplayName = "Relational operators -> left to right")]
+        [DataRow("1 = 2 != 3 = 4", DisplayName = "Equality operators -> left to right")]
+        [DataRow("1 | 2 & 3 ^ 4", DisplayName = "Bitwise AND > Bitwise XOR (exclusive or) > Bitwise OR (inclusive or)")]
+        [DataRow("1 AND 2 OR 3 AND 4", DisplayName = "Logical AND > Logical OR")]
+        [DataRow("1 ? 2 : 3 + 4", DisplayName = "Conditional-expression Right to left")]
+        [DataRow("1 + 2 * 3 - 4 / 5", DisplayName = "Multiplicative > Additive")]
+        [DataRow("1 + 2 < 2 + 3 <= 10 - 4 > 5 >= 3", DisplayName = "Additive > Relational")]
+        [DataRow("1 > 2 = false AND 1 > 2 != true", DisplayName = "Relational > Equality")]
+        [DataRow("1 = 2 & 3 != 4", DisplayName = "Equality > Bitwise AND")]
+        [DataRow("1 ^ 2 & 3 ^ 4", DisplayName = "Bitwise AND > Bitwise Exclusive OR")]
+        [DataRow("1 | 2 ^ 3 | 4", DisplayName = "Bitwise Exclusive OR > Bitwise Inclusive OR")]
+        [DataRow("1 AND 2 | 3 AND 4", DisplayName = "Bitwise Inclusive OR > Logical AND")]
+        [DataRow("1 OR 2 AND 3 OR 4", DisplayName = "Logical AND > Logical OR")]
+        [DataRow("1 || 2 OR 3 || 4", DisplayName = "Logical OR > String Concat")]
+        public void BinaryScalarExpressionOrderOfOperation(string scalarExpression)
+        {
+            ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
@@ -140,10 +163,10 @@
         }
 
         [TestMethod]
-        //[DataRow("ABS(-123)", DisplayName = "Basic")]
-        //[DataRow("PI()", DisplayName = "No Arguments")]
+        [DataRow("ABS(-123)", DisplayName = "Basic")]
+        [DataRow("PI()", DisplayName = "No Arguments")]
         [DataRow("STARTSWITH('asdf', 'asd')", DisplayName = "multiple arguments")]
-        //[DataRow("udf.my_udf(-123)", DisplayName = "udf")]
+        [DataRow("udf.my_udf(-123)", DisplayName = "udf")]
         public void FunctionCallScalarExpressionPositive(string scalarExpression)
         {
             ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
@@ -290,14 +313,22 @@
         }
 
         [TestMethod]
-        [DataRow("(c.name = 'John') and (c.age = 42)", DisplayName = "Parens + Binary Scalar Expression")]
+        [DataRow("('John')", DisplayName = "Parens")]
+        [DataRow("(1 + 2) * 3", DisplayName = "Parens force order of operations")]
         public void ParenethizedScalarExpressions(string scalarExpression)
         {
             ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
         }
 
         [TestMethod]
-        [DataRow("c.name = 'John' and c.age = 42", DisplayName = "binary scalar expression and property refs")]
+        [DataRow("1 ? 2 ?? 3 : 4", DisplayName = "Conditional > Coalese")]
+        [DataRow("1 BETWEEN 3 ?? 4 AND 5 AND 6", DisplayName = "Coalesce + Between")]
+        [DataRow("SELECT 1 NOT BETWEEN 2 and 1 NOT IN (1, 2, 3)", DisplayName = "In + Between")]
+        [DataRow("x + y.foo", DisplayName = "property refs > binary")]
+        [DataRow("-2 < 1", DisplayName = "unary > binary")]
+        [DataRow("NOT x.y.z", DisplayName = "propertyref > unary")]
+        [DataRow("true ? {\"x\": 1} : {\"x\": 2}.x", DisplayName = "Conditional > PropertyRef")]
+        [DataRow("1 between 2 and 3 between 4 and 5", DisplayName = "Nested BETWEEN")]
         public void OrderOfScalarExpressions(string scalarExpression)
         {
             ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
