@@ -156,7 +156,7 @@ primary_expression
 	| PARAMETER #ParameterRefScalarExpression
 	| literal #LiteralScalarExpression
 	| '[' scalar_expression_list? ']' #ArrayCreateScalarExpression
-	| '{' object_propertty_list? '}' #ObjectCreateScalarExpression
+	| '{' object_property_list? '}' #ObjectCreateScalarExpression
 	| (K_UDF '.')? IDENTIFIER '(' scalar_expression_list? ')' #FunctionCallScalarExpression
 	| '(' scalar_expression ')' #ParenthesizedScalarExperession
 	| '(' sql_query ')' #SubqueryScalarExpression
@@ -168,7 +168,7 @@ primary_expression
 
 scalar_expression_list : scalar_expression (',' scalar_expression)*;
 
-object_propertty_list : object_property (',' object_property)* ;
+object_property_list : object_property (',' object_property)* ;
 
 object_property : STRING_LITERAL ':' scalar_expression ;
 /*--------------------------------------------------------------------------------*/

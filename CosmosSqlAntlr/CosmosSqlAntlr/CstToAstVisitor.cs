@@ -353,30 +353,38 @@
             List<SqlOrderByItem> orderByItems = new List<SqlOrderByItem>();
             foreach (sqlParser.Order_by_itemContext orderByItemContext in context.order_by_items().order_by_item())
             {
-                SqlScalarExpression expression = (SqlScalarExpression)this.Visit(orderByItemContext.scalar_expression());
-                bool isDescending = false;
-                if (orderByItemContext.sort_order() != null)
-                {
-                    if (orderByItemContext.sort_order().K_ASC() != null)
-                    {
-                        isDescending = false;
-                    }
-                    else if (orderByItemContext.sort_order().K_DESC() != null)
-                    {
-                        isDescending = true;
-                    }
-                    else
-                    {
-                        throw new ArgumentOutOfRangeException($"Unknown sort order : {orderByItemContext.sort_order()}.");
-                    }
-                }
-
-                SqlOrderByItem orderByItem = SqlOrderByItem.Create(expression, isDescending);
+                SqlOrderByItem orderByItem = (SqlOrderByItem)this.VisitOrder_by_item(orderByItemContext);
                 orderByItems.Add(orderByItem);
             }
 
             return SqlOrderbyClause.Create(orderByItems);
         }
+
+        public override SqlObject VisitOrder_by_item([NotNull] sqlParser.Order_by_itemContext context)
+        {
+            Contract.Requires(context != null);
+
+            SqlScalarExpression expression = (SqlScalarExpression)this.Visit(context.scalar_expression());
+            bool isDescending = false;
+            if (context.sort_order() != null)
+            {
+                if (context.sort_order().K_ASC() != null)
+                {
+                    isDescending = false;
+                }
+                else if (context.sort_order().K_DESC() != null)
+                {
+                    isDescending = true;
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException($"Unknown sort order : {context.sort_order()}.");
+                }
+            }
+
+            return SqlOrderByItem.Create(expression, isDescending);
+        }
+
         #endregion
         #region OFFSET LIMIT
         public override SqlObject VisitOffset_limit_clause([NotNull] sqlParser.Offset_limit_clauseContext context)
@@ -585,45 +593,49 @@
         public override SqlObject VisitLiteralScalarExpression([NotNull] sqlParser.LiteralScalarExpressionContext context)
         {
             Contract.Requires(context != null);
-            Contract.Requires(context.ChildCount == 1);
-            Contract.Requires(context.children[0].ChildCount == 1);
 
-            TerminalNodeImpl terminalNode = (TerminalNodeImpl)(context.children[0].GetChild(0));
+            SqlLiteral sqlLiteral = (SqlLiteral)this.Visit(context.literal());
+            return SqlLiteralScalarExpression.Create(sqlLiteral);
+        }
 
-            SqlLiteralScalarExpression sqlLiteralScalarExpression;
+        public override SqlObject VisitLiteral([NotNull] sqlParser.LiteralContext context)
+        {
+            TerminalNodeImpl terminalNode = (TerminalNodeImpl)(context.children[0]);
+
+            SqlLiteral sqlLiteral;
             switch (terminalNode.Symbol.Type)
             {
                 case sqlParser.STRING_LITERAL:
                     string value = CstToAstVisitor.GetStringValueFromNode(terminalNode);
-                    sqlLiteralScalarExpression = SqlLiteralScalarExpression.Create(SqlStringLiteral.Create(value));
+                    sqlLiteral = SqlStringLiteral.Create(value);
                     break;
 
                 case sqlParser.NUMERIC_LITERAL:
                     Number64 number64 = CstToAstVisitor.GetNumber64ValueFromNode(terminalNode);
-                    sqlLiteralScalarExpression = SqlLiteralScalarExpression.Create(SqlNumberLiteral.Create(number64));
+                    sqlLiteral = SqlNumberLiteral.Create(number64);
                     break;
 
                 case sqlParser.K_TRUE:
-                    sqlLiteralScalarExpression = SqlLiteralScalarExpression.Create(SqlBooleanLiteral.Create(true));
+                    sqlLiteral = SqlBooleanLiteral.Create(true);
                     break;
 
                 case sqlParser.K_FALSE:
-                    sqlLiteralScalarExpression = SqlLiteralScalarExpression.Create(SqlBooleanLiteral.Create(false));
+                    sqlLiteral = SqlBooleanLiteral.Create(false);
                     break;
 
                 case sqlParser.K_NULL:
-                    sqlLiteralScalarExpression = SqlLiteralScalarExpression.Create(SqlNullLiteral.Create());
+                    sqlLiteral = SqlNullLiteral.Create();
                     break;
 
                 case sqlParser.K_UNDEFINED:
-                    sqlLiteralScalarExpression = SqlLiteralScalarExpression.Create(SqlUndefinedLiteral.Create());
+                    sqlLiteral = SqlUndefinedLiteral.Create();
                     break;
 
                 default:
                     throw new ArgumentOutOfRangeException($"Unknown symbol type: {terminalNode.Symbol.Type}");
             }
 
-            return sqlLiteralScalarExpression;
+            return sqlLiteral;
         }
 
         public override SqlObject VisitMemberIndexerScalarExpression([NotNull] sqlParser.MemberIndexerScalarExpressionContext context)
@@ -643,22 +655,33 @@
             // '{' object_propertty_list? '}'
 
             List<SqlObjectProperty> properties = new List<SqlObjectProperty>();
-            if (context.object_propertty_list() != null)
+            if (context.object_property_list() != null)
             {
-                sqlParser.Object_propertyContext[] propertyContexts = context.object_propertty_list().object_property();
+                sqlParser.Object_propertyContext[] propertyContexts = context.object_property_list().object_property();
                 foreach (sqlParser.Object_propertyContext objectPropertyContext in propertyContexts)
                 {
-                    string name = CstToAstVisitor.GetStringValueFromNode(objectPropertyContext.STRING_LITERAL());
-                    SqlScalarExpression value = (SqlScalarExpression)this.Visit(objectPropertyContext.scalar_expression());
-
-                    SqlObjectProperty property = SqlObjectProperty.Create(
-                        SqlPropertyName.Create(name),
-                        value);
+                    SqlObjectProperty property = (SqlObjectProperty)this.Visit(objectPropertyContext);
                     properties.Add(property);
                 }
             }
 
             return SqlObjectCreateScalarExpression.Create(properties);
+        }
+
+        public override SqlObject VisitObject_property([NotNull] sqlParser.Object_propertyContext context)
+        {
+            Contract.Requires(context != null);
+            Contract.Requires(context.STRING_LITERAL() != null);
+            Contract.Requires(context.scalar_expression() != null);
+
+            string name = CstToAstVisitor.GetStringValueFromNode(context.STRING_LITERAL());
+            SqlScalarExpression value = (SqlScalarExpression)this.Visit(context.scalar_expression());
+
+            SqlObjectProperty property = SqlObjectProperty.Create(
+                SqlPropertyName.Create(name),
+                value);
+
+            return property;
         }
 
         public override SqlObject VisitParameterRefScalarExpression([NotNull] sqlParser.ParameterRefScalarExpressionContext context)
@@ -750,23 +773,53 @@
             return sqlObject;
         }
         #endregion
-        #region NOT IMPLEMENTED ON PURPOSE
-        public override SqlObject VisitLiteral([NotNull] sqlParser.LiteralContext context)
+        #region NOT IMPLEMENTED SINCE SUB ATOMIC SQL OBJECTS
+        public override SqlObject VisitAdditive_operator([NotNull] sqlParser.Additive_operatorContext context)
         {
             throw new NotSupportedException();
         }
 
-        public override SqlObject VisitObject_propertty_list([NotNull] sqlParser.Object_propertty_listContext context)
+        public override SqlObject VisitBitwise_and_operator([NotNull] sqlParser.Bitwise_and_operatorContext context)
         {
             throw new NotSupportedException();
         }
 
-        public override SqlObject VisitObject_property([NotNull] sqlParser.Object_propertyContext context)
+        public override SqlObject VisitBitwise_exclusive_or_operator([NotNull] sqlParser.Bitwise_exclusive_or_operatorContext context)
         {
             throw new NotSupportedException();
         }
 
-        public override SqlObject VisitOrder_by_item([NotNull] sqlParser.Order_by_itemContext context)
+        public override SqlObject VisitBitwise_inclusive_or_operator([NotNull] sqlParser.Bitwise_inclusive_or_operatorContext context)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override SqlObject VisitEquality_operator([NotNull] sqlParser.Equality_operatorContext context)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override SqlObject VisitMultiplicative_operator([NotNull] sqlParser.Multiplicative_operatorContext context)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override SqlObject VisitRelational_operator([NotNull] sqlParser.Relational_operatorContext context)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override SqlObject VisitString_concat_operator([NotNull] sqlParser.String_concat_operatorContext context)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override SqlObject VisitUnary_operator([NotNull] sqlParser.Unary_operatorContext context)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override SqlObject VisitObject_property_list([NotNull] sqlParser.Object_property_listContext context)
         {
             throw new NotSupportedException();
         }

@@ -329,13 +329,13 @@
 
         [TestMethod]
         [DataRow("1 ? 2 ?? 3 : 4", DisplayName = "Conditional > Coalese")]
-        [DataRow("1 BETWEEN 3 ?? 4 AND 5 AND 6", DisplayName = "Coalesce + Between")]
-        [DataRow("SELECT 1 NOT BETWEEN 2 and 1 NOT IN (1, 2, 3)", DisplayName = "In + Between")]
+        //[DataRow("1 BETWEEN 3 ?? 4 AND 5 AND 6", DisplayName = "Coalesce + Between")]
+        //[DataRow("SELECT 1 NOT BETWEEN 2 and 1 NOT IN (1, 2, 3)", DisplayName = "In + Between")]
         [DataRow("x + y.foo", DisplayName = "property refs > binary")]
         [DataRow("-2 < 1", DisplayName = "unary > binary")]
         [DataRow("NOT x.y.z", DisplayName = "propertyref > unary")]
         [DataRow("true ? {\"x\": 1} : {\"x\": 2}.x", DisplayName = "Conditional > PropertyRef")]
-        [DataRow("1 between 2 and 3 between 4 and 5", DisplayName = "Nested BETWEEN")]
+        //[DataRow("1 between 2 and 3 between 4 and 5", DisplayName = "Nested BETWEEN")]
         public void OrderOfScalarExpressions(string scalarExpression)
         {
             ScalarExpressionTests.ValidateScalarExpression(scalarExpression);
