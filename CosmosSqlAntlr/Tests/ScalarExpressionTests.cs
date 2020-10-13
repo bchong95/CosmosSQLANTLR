@@ -184,7 +184,8 @@
 
         [TestMethod]
         [DataRow("42 IN(42)", DisplayName = "Basic")]
-        [DataRow("42 IN ('asdf', 'asdf')", DisplayName = "multiple arguments")]
+        [DataRow("42 IN (1, 2, 3)", DisplayName = "multiple arguments")]
+        [DataRow("42 IN (\"WA\", \"CA\")", DisplayName = "multiple string arguments")]
         [DataRow("42 NOT IN (42)", DisplayName = "NOT IN")]
         public void InScalarExpressionPositive(string scalarExpression)
         {

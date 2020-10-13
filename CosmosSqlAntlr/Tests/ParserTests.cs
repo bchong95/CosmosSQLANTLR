@@ -27,9 +27,10 @@ namespace CosmosSqlAntlr.Tests
         protected static void Invalidate(string query)
         {
             Assert.IsNotNull(query);
+            bool parsed = SqlQuery.TryParse(query, out SqlQuery parsedQuery);
 
             Assert.IsFalse(
-                SqlQuery.TryParse(query, out _),
+                parsed,
                 $"Expected failure to parse query: {query}");
         }
     }
